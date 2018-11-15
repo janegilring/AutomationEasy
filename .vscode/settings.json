@@ -1,0 +1,5 @@
+{
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+    "files.encoding": "utf8bom"
+}
