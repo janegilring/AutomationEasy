@@ -1,6 +1,6 @@
 ﻿# User-Management-Automation
 
-[![Build Status](https://crayondemo.visualstudio.com/User.Management.Automation/_apis/build/status/User.Management.Automation-CI)](https://crayondemo.visualstudio.com/User.Management.Automation/_build/latest?definitionId=1)
+[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/PR%20Build)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=4)
 
 # Deployment
 Deploy the files with [Plaster](https://github.com/PowerShell/Plaster)
