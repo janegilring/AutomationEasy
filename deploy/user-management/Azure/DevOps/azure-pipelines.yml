@@ -1,0 +1,37 @@
+resources:
+
+- repo: self
+
+queue:
+
+  name: Hosted VS2017
+
+steps:
+
+- powershell: ./ '$(System.DefaultWorkingDirectory)\Build\build.ps1'
+
+  displayName: 'PowerShell Script'
+
+
+
+- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+
+  displayName: 'Pester Test Runner'
+
+  inputs:
+
+    scriptFolder: '$(System.DefaultWorkingDirectory)\Build\Tests\*'
+
+
+
+  continueOnError: true
+
+
+
+- task: PublishTestResults@2
+
+  displayName: 'Publish Test Results **/TEST-*.xml'
+
+  inputs:
+
+    testResultsFormat: NUnit

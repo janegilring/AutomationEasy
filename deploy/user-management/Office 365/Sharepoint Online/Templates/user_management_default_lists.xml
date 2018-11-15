@@ -1,0 +1,191 @@
+﻿<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.1.1809.0, Culture=neutral, PublicKeyToken=5e633289e95c321a" />
+  <pnp:Templates ID="CONTAINER-TEMPLATE-E1F6E6F93C4F40BE87E36DE8025CA29A">
+    <pnp:ProvisioningTemplate ID="TEMPLATE-E1F6E6F93C4F40BE87E36DE8025CA29A" Version="1" BaseSiteTemplate="STS#0" Scope="Web">
+      <pnp:Lists>
+        <pnp:ListInstance Title="Company" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/Company" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/Company/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/Company/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/Company/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{E0509346-D366-4FA9-A89F-7980C1F27AD4}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/IT/Lists/Company/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Country" />
+                <FieldRef Name="Domain" />
+                <FieldRef Name="Company_x0020_abbriviation" />
+                <FieldRef Name="Country_x0020_abbriviation" />
+                <FieldRef Name="CEO" />
+                <FieldRef Name="CompanyRegNumber" />
+                <FieldRef Name="StreetAddress" />
+                <FieldRef Name="PostalCode" />
+                <FieldRef Name="City" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Text" DisplayName="Country" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{cd49a2fc-b9c8-497f-b2f7-72296f5f1967}" SourceID="{{listid:Company}}" StaticName="Country" Name="Country" ColName="nvarchar4" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Domain" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{3ee26982-eeee-4820-8549-69660d100416}" SourceID="{{listid:Company}}" StaticName="Domain" Name="Domain" ColName="nvarchar5" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Company abbriviation" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{db4d414c-174c-469c-96dd-473f013dc3e9}" SourceID="{{listid:Company}}" StaticName="Company_x0020_abbriviation" Name="Company_x0020_abbriviation" ColName="nvarchar6" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Country abbriviation" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{0a1ee258-e867-499b-8ae7-7b29c41dc682}" SourceID="{{listid:Company}}" StaticName="Country_x0020_abbriviation" Name="Country_x0020_abbriviation" ColName="nvarchar7" RowOrdinal="0" />
+            <Field Type="User" DisplayName="CEO" List="UserInfo" Required="FALSE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{09014169-441c-41e4-9bd2-3fa27da36382}" SourceID="{{listid:Company}}" StaticName="CEO" Name="CEO" ColName="int1" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="CompanyRegNumber" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{c413dce6-ecf4-442d-8784-9fb4d7de33db}" SourceID="{{listid:Company}}" StaticName="CompanyRegNumber" Name="CompanyRegNumber" ColName="nvarchar8" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="StreetAddress" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{65fa813b-ad3c-4fe3-8bf6-cd0c7ad79f42}" SourceID="{{listid:Company}}" StaticName="StreetAddress" Name="StreetAddress" ColName="nvarchar9" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="PostalCode" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{8fb9086f-ae96-413a-b3b4-d0022aa0ec05}" SourceID="{{listid:Company}}" StaticName="PostalCode" Name="PostalCode" ColName="nvarchar10" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="City" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{daf1536d-4eec-48a9-8ac3-3806457ed304}" SourceID="{{listid:Company}}" StaticName="City" Name="City" ColName="nvarchar11" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="User Offboarding" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/User Offboarding" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/User Offboarding/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/User Offboarding/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/User Offboarding/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{614C8AD8-9B9B-4155-AA90-EBF76D2AB6D7}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/IT/Lists/User Offboarding/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="Created" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Employee" />
+                <FieldRef Name="WorkflowStatus" />
+                <FieldRef Name="Manager" />
+                <FieldRef Name="Delete_x0020_User_x0020__x002d__" />
+                <FieldRef Name="Delete_x0020_User_x0020_Done" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="User" DisplayName="Employee" List="UserInfo" Required="TRUE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{2c43d7f5-7d55-4f0a-9ce6-b9114df754e4}" SourceID="{{listid:User Offboarding}}" StaticName="Employee" Name="Employee" ColName="int1" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="WorkflowStatus" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{e37f5539-3b38-40e5-911d-6f5daaeddf08}" SourceID="{{listid:User Offboarding}}" StaticName="WorkflowStatus" Name="WorkflowStatus" ColName="nvarchar4" RowOrdinal="0">
+              <Default>Not started</Default>
+            </Field>
+            <Field Type="User" DisplayName="Manager" List="UserInfo" Required="TRUE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{acbeb5c2-a3eb-4eb3-a99a-0b058466ce8b}" SourceID="{{listid:User Offboarding}}" StaticName="Manager" Name="Manager" ColName="int2" RowOrdinal="0" />
+            <Field Type="DateTime" DisplayName="Delete User - Date" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateOnly" FriendlyDisplayFormat="Disabled" ID="{3096c39c-93ea-4ebc-85f6-ac071f67f654}" SourceID="{{listid:User Offboarding}}" StaticName="Delete_x0020_User_x0020__x002d__" Name="Delete_x0020_User_x0020__x002d__" ColName="datetime5" RowOrdinal="0" Version="1" />
+            <Field Type="DateTime" DisplayName="Delete User Done" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateOnly" FriendlyDisplayFormat="Disabled" ID="{e1154525-e1a5-460e-8f67-314a6ebb71dd}" SourceID="{{listid:User Offboarding}}" StaticName="Delete_x0020_User_x0020_Done" Name="Delete_x0020_User_x0020_Done" ColName="datetime6" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="User Onboarding" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/User Onboarding" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/User Onboarding/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/User Onboarding/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/User Onboarding/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{6CC62A1F-B3C6-4B5B-952E-968F38ACB073}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/IT/Lists/User Onboarding/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="Created" Ascending="FALSE" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="Workflow_x0020_Status" />
+                <FieldRef Name="Status" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="First_x0020_Name" />
+                <FieldRef Name="Middle_x0020_Name" />
+                <FieldRef Name="Last_x0020_Name" />
+                <FieldRef Name="MobilePhone" />
+                <FieldRef Name="Manager" />
+                <FieldRef Name="Employee_x0020_Category" />
+                <FieldRef Name="Company" />
+                <FieldRef Name="Company_x003a_Company" />
+                <FieldRef Name="Company_x003a_Country" />
+                <FieldRef Name="Company_x003a_Domain" />
+                <FieldRef Name="Company_x003a_Company_x0020_abbr" />
+                <FieldRef Name="Company_x003a_Country_x0020_abbr" />
+                <FieldRef Name="Company_x003a_CompanyRegNumber" />
+                <FieldRef Name="Company_x003a_StreetAddress" />
+                <FieldRef Name="Company_x003a_PostalCode" />
+                <FieldRef Name="Company_x003a_City" />
+                <FieldRef Name="On_x0020_Behalf" />
+                <FieldRef Name="Job_x0020_Title" />
+                <FieldRef Name="Department" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Text" DisplayName="First Name" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{e212d6b8-a043-4a4f-b699-314e2bad5b87}" SourceID="{{listid:User Onboarding}}" StaticName="First_x0020_Name" Name="First_x0020_Name" ColName="nvarchar4" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Middle Name" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{e2ce6845-cf3c-4291-9567-e54dc7271da8}" SourceID="{{listid:User Onboarding}}" StaticName="Middle_x0020_Name" Name="Middle_x0020_Name" ColName="nvarchar5" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Last Name" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{9a6eec5b-9699-4afc-8da3-4d0569bec446}" SourceID="{{listid:User Onboarding}}" StaticName="Last_x0020_Name" Name="Last_x0020_Name" ColName="nvarchar6" RowOrdinal="0" CustomFormatter="" Version="1" />
+            <Field Type="Text" DisplayName="MobilePhone" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{433d3dd8-e806-411a-af8e-440e9c30ece9}" SourceID="{{listid:User Onboarding}}" StaticName="MobilePhone" Name="MobilePhone" ColName="nvarchar7" RowOrdinal="0" />
+            <Field Type="User" DisplayName="Manager" List="UserInfo" Required="FALSE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{2172b21b-fefa-4e0d-ad2b-3a96f5d42fc9}" SourceID="{{listid:User Onboarding}}" StaticName="Manager" Name="Manager" ColName="int1" RowOrdinal="0" Group="" Version="1" />
+            <Field Type="Text" DisplayName="Status" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{a50b16e3-5b5b-4696-9403-017ecddd524d}" SourceID="{{listid:User Onboarding}}" StaticName="Status" Name="Status" ColName="nvarchar9" RowOrdinal="0" />
+            <Field Type="Choice" DisplayName="Employee Category" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{65d76d3b-432c-4900-bd0d-c722a8cae8ae}" SourceID="{{listid:User Onboarding}}" StaticName="Employee_x0020_Category" Name="Employee_x0020_Category" ColName="nvarchar10" RowOrdinal="0">
+              <Default>Full Time Employee</Default>
+              <CHOICES>
+                <CHOICE>Full Time Employee</CHOICE>
+                <CHOICE>Part Time Employee</CHOICE>
+                <CHOICE>External</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="Choice" DisplayName="Workflow Status" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{cb7fceb0-e631-4e61-81d4-2f1db5d53c95}" SourceID="{{listid:User Onboarding}}" StaticName="Workflow_x0020_Status" Name="Workflow_x0020_Status" ColName="nvarchar11" RowOrdinal="0">
+              <Default>New</Default>
+              <CHOICES>
+                <CHOICE>New</CHOICE>
+                <CHOICE>In Progress</CHOICE>
+                <CHOICE>Failed</CHOICE>
+                <CHOICE>Completed</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="Lookup" DisplayName="Company" Required="FALSE" EnforceUniqueValues="FALSE" List="{listid:Company}" ShowField="Title" UnlimitedLengthInDocumentLibrary="FALSE" RelationshipDeleteBehavior="None" ID="{32945077-69c4-4830-bf28-23d90a41253e}" SourceID="{{listid:User Onboarding}}" StaticName="Company" Name="Company" ColName="int2" RowOrdinal="0" />
+            <Field Type="Lookup" DisplayName="Company:Company" List="{listid:Company}" WebId="{siteid}" ShowField="Title" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{edfa02ad-dfd1-48ad-86fa-ef4227621e3f}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_Company" Name="Company_x003a_Company" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:Country" List="{listid:Company}" WebId="{siteid}" ShowField="Country" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{45a9eaa1-aeb3-4a88-995a-d01ef6fabf37}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_Country" Name="Company_x003a_Country" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:Domain" List="{listid:Company}" WebId="{siteid}" ShowField="Domain" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{765c9348-b4bc-4fb7-8b67-d44988fc375a}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_Domain" Name="Company_x003a_Domain" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:Company abbriviation" List="{listid:Company}" WebId="{siteid}" ShowField="Company_x0020_abbriviation" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{435db69d-826f-4107-a7b3-03ddddb91525}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_Company_x0020_abbr" Name="Company_x003a_Company_x0020_abbr" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:Country abbriviation" List="{listid:Company}" WebId="{siteid}" ShowField="Country_x0020_abbriviation" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{4eae03f0-7629-47cf-9f9a-2a5a2747fef1}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_Country_x0020_abbr" Name="Company_x003a_Country_x0020_abbr" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:CompanyRegNumber" List="{listid:Company}" WebId="{siteid}" ShowField="CompanyRegNumber" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{6fd279e0-2083-40aa-830d-59fe0f0e9f18}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_CompanyRegNumber" Name="Company_x003a_CompanyRegNumber" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:StreetAddress" List="{listid:Company}" WebId="{siteid}" ShowField="StreetAddress" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{d2b39fb3-c44d-485b-9f71-b264d9585586}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_StreetAddress" Name="Company_x003a_StreetAddress" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:PostalCode" List="{listid:Company}" WebId="{siteid}" ShowField="PostalCode" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{81be011c-e16d-482d-8c98-f9536e1aa6e7}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_PostalCode" Name="Company_x003a_PostalCode" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:City" List="{listid:Company}" WebId="{siteid}" ShowField="City" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{385dc657-0ae3-4fd4-8f83-5c5984cd9099}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_City" Name="Company_x003a_City" Version="1" />
+            <Field Type="User" DisplayName="On Behalf" List="UserInfo" Required="FALSE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{8e2d3492-fe71-42fb-8955-900fddc20c6d}" SourceID="{{listid:User Onboarding}}" StaticName="On_x0020_Behalf" Name="On_x0020_Behalf" ColName="int3" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Job Title" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{47a53243-96cf-4fe2-8ebe-99c5a9822243}" SourceID="{{listid:User Onboarding}}" StaticName="Job_x0020_Title" Name="Job_x0020_Title" ColName="nvarchar12" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Department" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{64d1fbf3-843a-49d5-a3c9-78ddb7ab63c1}" SourceID="{{listid:User Onboarding}}" StaticName="Department" Name="Department" ColName="nvarchar13" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+      </pnp:Lists>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>
