@@ -1,0 +1,73 @@
+resources:
+
+- repo: self
+
+phases:
+
+- phase: Phase_2
+
+  displayName: Agentless job
+
+
+
+  dependsOn: Phase_1
+
+  condition: succeeded()
+
+  server: true
+
+  steps:
+
+  - task: jessehouwing.vsts-ensure-tests-tasks.vsts-ensure-tests-tasks.Ensure tests have executed.@0
+
+    displayName: 'Ensure tests have executed'
+
+
+
+
+
+
+
+- phase: Phase_1
+
+  displayName: Agent job 1
+
+
+
+  condition: succeeded()
+
+  queue:
+
+    name: Hosted VS2017
+
+  steps:
+
+  - powershell: ./Build/build.ps1
+
+    displayName: 'PowerShell Script'
+
+
+
+  - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+
+    displayName: 'Pester Test Runner'
+
+    inputs:
+
+      scriptFolder: '$(System.DefaultWorkingDirectory)\Build\*'
+
+
+
+
+
+  - task: PublishTestResults@2
+
+    displayName: 'Publish Test Results **/TEST-*.xml'
+
+    inputs:
+
+      testResultsFormat: NUnit
+
+
+
+    condition: succeededOrFailed()
