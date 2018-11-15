@@ -5,7 +5,7 @@ Describe 'Testing against PowerShell Script Analyzer Rules' {
         $Files = Get-ChildItem -Path $PSScriptRoot\..\..\deploy -Recurse | where {$_.Extension -eq ".ps1"}
         foreach ($file in $files) {
 
-            $analysis = Invoke-ScriptAnalyzer -Path $file.FullName
+            $analysis = Invoke-ScriptAnalyzer -Path $file.FullName -ExcludeRule PSUseDeclaredVarsMoreThanAssignments,PSUseBOMForUnicodeEncodedFile
             $scriptAnalyzerRules = Get-ScriptAnalyzerRule
 
             forEach ($rule in $scriptAnalyzerRules) {

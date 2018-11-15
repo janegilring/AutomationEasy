@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plasterManifest schemaVersion="1.0"
+  xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+  <metadata>
+    <name>AutomationEasy</name>
+    <id>48b71a26-faae-44a7-8fe9-f56236712021</id>
+    <version>0.0.1</version>
+    <title>AutomationEasy</title>
+    <description></description>
+    <author>AutomationEasy</author>
+    <tags></tags>
+  </metadata>
+  <parameters>
+    <parameter name="FeatureSelect" type="multichoice" prompt="Please select features to install" default='0,1'>
+      <choice label="&amp;User Management" help="Deployment will contain the User Management feature" value="UserManagement" />
+      <choice label="&amp;Azure Automation" help="Deployment will contain the Azure Automation feature" value="AzureAutomation" />
+    </parameter>
+    <parameter name="AzureADConnectServer" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="FQDN of the AAD Connect server" default="SERVER01" />
+    <parameter name="AzureADPremiumLicenseWarningThreshold" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="Azure AD Premium license remaining warning threshold" default="3" />
+    <parameter name="Office365E3LicenseWarningThreshold" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="Office 365 E3 license remaining warning threshold" default="3" />
+    <parameter name="MSTeamsUserManagementNotificationsWebhookURL" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="MS Teams User Management notifications webhook" default="https://outlook.office.com/webhook/xxx/yyy/zzz" />
+    <parameter name="MSTeamsUserManagementWarningNotificationsWebhookURL" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="MS Teams User Management license warning notifications webhook" default="https://outlook.office.com/webhook/xxx/yyy/zzz" />
+    <parameter name="SharePointAutomationSiteURL" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="Site URL of the Sharepoint site that will contain the configuration" default="https://contoso.sharepoint.com/ITAutomation" />
+    <parameter name="SharePointAutomationEmailContentListName" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="Name of the sharepoint list that contains email content" default="Email Content" />
+    <parameter name="SharePointCompanyListName" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="Name of the sharepoint list that contains Company configuration" default="Company" />
+    <parameter name="SharePointDepartmentListName" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="Name of the sharepoint list that contains Department configuration" default="Department" />
+  </parameters>
+  <content>
+    <message condition='$PLASTER_PARAM_FeatureSelect -contains "AzureAutomation"'>Creating folder structure for Azure Automation</message>
+    <file condition='$PLASTER_PARAM_FeatureSelect -contains "AzureAutomation"' source='azure-automation/**' destination='azure-automation/'/>
+    <message condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"'>Creating folder structure for User Management</message>
+    <file condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' source='user-management/**' destination='user-management/'/>
+    <templateFile condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' source='user-management\Azure\Automation\Assets\AzureAutomationVariables.csv' destination=''/>
+  </content>
+</plasterManifest>
