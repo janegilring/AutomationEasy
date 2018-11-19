@@ -1,0 +1,93 @@
+﻿{
+    "LogType":  "File",
+    "LogPath":  "C:\\ad-sync-log\\ADSync-updateonly-whatif.log",
+    "VerboseLogging": "False",
+    "ExchangeServer": "exserver.fqdn",
+    "Exchangeonlinedomain": "tenantname.mail.onmicrosoft.com",
+    "Smtpserver":  "smtp.server.fqdn",
+    "SmtpFrom": "adsync@domain.no",
+    "SmtpTo": "heldpesk@domain.no",
+    "WhatIf": "true",
+    "Actions": ["Create,Update,Deprovision"],
+    "SoftMapping": "false",
+    "DisabledUsersOU": "OU=DisabledUsers,OU=DisabledObjects,OU=Company,DC=company,DC=no",
+    "NewUsersOU": "ou=new users,ou=users,dc=domain,dc=no",
+    "AttributeMappings":  [
+                    {
+                         "Source":  "Brukernavn",
+                         "Target":  "Samaccountname",
+                         "Type":  "AD-Login"
+                    },
+                    {
+                         "Source":  "mobil",
+                         "Target":  "mobile",
+                         "Type":  "AD-String"
+                    },
+                    {
+                         "Source":  "FORNAVN",
+                         "Target":  "GivenName",
+                         "Type":  "AD-String"
+                    },
+                    {
+                         "Source":  "Description",
+                         "Target":  "Description",
+                         "Type":  "AD-String",
+                         "Rule": "Ressurstype %RESSURSTYPE% - %BUTIKKSTILLINGNAVN% - %distrikt/arbeidssted% - %BRUKERNAVN% - %RESSURSNUMMER%"
+                    },
+                    {
+                         "Source":  "ETTERNAVN",
+                         "Target":  "sn",
+                         "Type":  "AD-String"
+                    },
+                    {
+                         "Source":  "NAVN",
+                         "Target":  "DisplayName",
+                         "Type":  "AD-String"
+                    },
+                    {
+                         "Source":  "NAVN",
+                         "Target":  "Name",
+                         "Type":  "AD-Name"
+                    },
+                    {
+                         "Source":  "RESSURSTYPE",
+                         "Target":  "EmployeeID",
+                         "Type":  "AD-String"
+                    },
+                    {
+                         "Source":  "distrikt/arbeidssted",
+                         "Target":  "Department",
+                         "Type":  "AD-String"
+                    },
+                    {
+                         "Source":  "Butikkstillingnavn",
+                         "Target":  "title",
+ 		            	 "IgnoreEmpty": "True",
+                         "Type":  "AD-String"
+                    },
+                    {
+                         "Source":  "LEDER",
+                         "Target":  "Manager",
+                         "Type":  "AD-Manager"
+                    },
+                    {
+                         "Source":  "E_POST",
+                         "Target":  "Mail",
+                         "Type":  "Exchange-PrimarySMTP"
+                    }
+
+    ],
+    "ObjectMapping":    [
+                    {
+                        "Source":   "Ressursnummer",
+                        "Target":   "Employeenumber"
+                    }
+    ],
+    "HRDataSource": [
+                    {
+                        "Type": "Oracle",
+                        "ConnectionString": "User Id=abcd;Password=1234;Data Source=oraclename",
+                        "Query":    "SELECT * FROM db_view"
+                    }
+    ]
+}

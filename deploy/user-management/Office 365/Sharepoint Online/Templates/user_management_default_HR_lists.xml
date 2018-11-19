@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.1.1809.0, Culture=neutral, PublicKeyToken=5e633289e95c321a" />
+  <pnp:Templates ID="CONTAINER-TEMPLATE-F2452914EAC545078DA00DF419623D59">
+    <pnp:ProvisioningTemplate ID="TEMPLATE-F2452914EAC545078DA00DF419623D59" Version="1" BaseSiteTemplate="STS#0" Scope="RootSite">
+      <pnp:Lists>
+        <pnp:ListInstance Title="AutomationDataSources" Description="" DocumentTemplate="" TemplateType="100" Url="Lists/AutomationDataSources" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/AutomationDataSources/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/AutomationDataSources/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/AutomationDataSources/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{7A88F887-6952-4578-9D48-F35DB2D62437}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/IT/Lists/AutomationDataSources/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="Environment" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="ConnectionString" />
+                <FieldRef Name="Query" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Text" DisplayName="ConnectionString" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{548dca60-b0d6-458c-896a-11ba4e6e0196}" SourceID="{{listid:AutomationDataSources}}" StaticName="ConnectionString" Name="ConnectionString" ColName="nvarchar4" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Query" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{1ed69786-6ddd-4afc-92d1-f4272f3d952f}" SourceID="{{listid:AutomationDataSources}}" StaticName="Query" Name="Query" ColName="nvarchar5" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Environment" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{b97596d5-5aaf-4990-b486-6d118019cde4}" SourceID="{{listid:AutomationDataSources}}" StaticName="Environment" Name="Environment" ColName="nvarchar6" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+          </pnp:FieldRefs>
+          <pnp:Webhooks>
+            <pnp:Webhook ServerNotificationUrl="https://5-westeurope1.pushp.svc.ms/notifications?token=w1-b163a977-bc9f-4ab8-bbe5-2c57510f1022" ExpiresInDays="1" />
+            <pnp:Webhook ServerNotificationUrl="https://5-westeurope1.pushp.svc.ms/notifications?token=w1-3d9dc498-de0b-46b2-baf8-62201c7d45c5" ExpiresInDays="1" />
+            <pnp:Webhook ServerNotificationUrl="https://5-westeurope1.pushp.svc.ms/notifications?token=w1-44d48cc0-3584-4397-a8c3-5b5586455aaf" ExpiresInDays="1" />
+          </pnp:Webhooks>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="HRSyncAttributeMappings" Description="" DocumentTemplate="" TemplateType="100" Url="Lists/HRSyncAttributeMappings" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/HRSyncAttributeMappings/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/HRSyncAttributeMappings/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/HRSyncAttributeMappings/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{CF78F055-89F0-44AE-AEA0-11C0BD479D45}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/IT/Lists/HRSyncAttributeMappings/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Target" />
+                <FieldRef Name="AttributeType" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Text" DisplayName="Target" Required="TRUE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{712f3d1c-e234-4ca8-a78b-d5ba50360d68}" SourceID="{{listid:HRSyncAttributeMappings}}" StaticName="Target" Name="Target" ColName="nvarchar4" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="AttributeType" Required="TRUE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{368ae300-49e5-4833-bb73-22bc6c1c3d92}" SourceID="{{listid:HRSyncAttributeMappings}}" StaticName="AttributeType" Name="AttributeType" ColName="nvarchar5" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+          </pnp:FieldRefs>
+          <pnp:Webhooks>
+            <pnp:Webhook ServerNotificationUrl="https://3-westeurope1.pushp.svc.ms/notifications?token=w2-e22be870-7e91-4519-b3cb-19cf5b00ec3c" ExpiresInDays="1" />
+            <pnp:Webhook ServerNotificationUrl="https://3-westeurope1.pushp.svc.ms/notifications?token=w2-48ab6dab-657f-4e07-bf2a-14eefcc15303" ExpiresInDays="1" />
+          </pnp:Webhooks>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="HRSyncSettings" Description="" DocumentTemplate="" TemplateType="100" Url="Lists/HRSyncSettings" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/HRSyncSettings/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/HRSyncSettings/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/HRSyncSettings/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{8ADD2FB7-CA8C-4C0A-8503-6130B4C17986}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/IT/Lists/HRSyncSettings/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="Environment" />
+                <FieldRef Name="LogType" />
+                <FieldRef Name="LogPath" />
+                <FieldRef Name="ExchangeServer" />
+                <FieldRef Name="Exchangeonlinedomain" />
+                <FieldRef Name="Smtpserver" />
+                <FieldRef Name="SmtpFrom" />
+                <FieldRef Name="SmtpTo" />
+                <FieldRef Name="Actions" />
+                <FieldRef Name="DisabledUsersOU" />
+                <FieldRef Name="NewUsersOU" />
+                <FieldRef Name="VerboseLogging" />
+                <FieldRef Name="WhatIf" />
+                <FieldRef Name="SoftMapping" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <Aggregations Value="Off" />
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Text" DisplayName="LogType" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{18b27022-7934-44a1-bf0b-d257087063ae}" SourceID="{{listid:HRSyncSettings}}" StaticName="LogType" Name="LogType" ColName="nvarchar4" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="LogPath" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{88d7cb2c-7bec-45a4-9de0-cb7ca26ed5f2}" SourceID="{{listid:HRSyncSettings}}" StaticName="LogPath" Name="LogPath" ColName="nvarchar5" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="ExchangeServer" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{33e9c1f7-8847-4c57-b86c-2782286d9cd6}" SourceID="{{listid:HRSyncSettings}}" StaticName="ExchangeServer" Name="ExchangeServer" ColName="nvarchar7" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Exchangeonlinedomain" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{684f3c71-c504-4c12-850a-b1d38693add1}" SourceID="{{listid:HRSyncSettings}}" StaticName="Exchangeonlinedomain" Name="Exchangeonlinedomain" ColName="nvarchar8" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Smtpserver" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{d83a7786-7019-42de-9c2b-6756babda3e5}" SourceID="{{listid:HRSyncSettings}}" StaticName="Smtpserver" Name="Smtpserver" ColName="nvarchar9" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="SmtpFrom" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{c0c54c36-5bc7-4d45-8a01-b6461eda4dba}" SourceID="{{listid:HRSyncSettings}}" StaticName="SmtpFrom" Name="SmtpFrom" ColName="nvarchar10" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="SmtpTo" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{2f8cc49e-6f82-4984-9ef8-6b6c7b31a2de}" SourceID="{{listid:HRSyncSettings}}" StaticName="SmtpTo" Name="SmtpTo" ColName="nvarchar11" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Actions" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{730190da-0c04-4def-a62c-3c626d44d5e8}" SourceID="{{listid:HRSyncSettings}}" StaticName="Actions" Name="Actions" ColName="nvarchar13" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="DisabledUsersOU" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{0b30fe6d-b453-4735-9fda-e89d1c0ef767}" SourceID="{{listid:HRSyncSettings}}" StaticName="DisabledUsersOU" Name="DisabledUsersOU" ColName="nvarchar15" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="NewUsersOU" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{9af9fdaa-9de6-45ca-bae4-5de4a1f45b76}" SourceID="{{listid:HRSyncSettings}}" StaticName="NewUsersOU" Name="NewUsersOU" ColName="nvarchar16" RowOrdinal="0" />
+            <Field Type="Boolean" DisplayName="VerboseLogging" EnforceUniqueValues="FALSE" Indexed="FALSE" ID="{9f976998-b7bb-43d5-8c7e-6671229c6dfd}" SourceID="{{listid:HRSyncSettings}}" StaticName="VerboseLogging" Name="VerboseLogging" ColName="bit1" RowOrdinal="0">
+              <Default>1</Default>
+            </Field>
+            <Field Type="Boolean" DisplayName="WhatIf" EnforceUniqueValues="FALSE" Indexed="FALSE" ID="{fe43b6a6-1de8-4a43-8949-a293a02cb3bc}" SourceID="{{listid:HRSyncSettings}}" StaticName="WhatIf" Name="WhatIf" ColName="bit2" RowOrdinal="0">
+              <Default>1</Default>
+            </Field>
+            <Field Type="Boolean" DisplayName="SoftMapping" EnforceUniqueValues="FALSE" Indexed="FALSE" ID="{f62d40fa-6f40-47d0-94ad-8e7f9321af52}" SourceID="{{listid:HRSyncSettings}}" StaticName="SoftMapping" Name="SoftMapping" ColName="bit3" RowOrdinal="0">
+              <Default>1</Default>
+            </Field>
+            <Field Type="Text" DisplayName="Environment" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{df938548-9adf-447e-a831-34dc76ab476b}" SourceID="{{listid:HRSyncSettings}}" StaticName="Environment" Name="Environment" ColName="nvarchar6" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+      </pnp:Lists>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>
