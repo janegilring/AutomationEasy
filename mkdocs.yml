@@ -3,3 +3,4 @@ repo_url: https://github.com/CrayonAS/AutomationEasy
 theme: material
 markdown_extensions:
   - extra
+  - sane
