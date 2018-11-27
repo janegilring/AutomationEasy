@@ -6,7 +6,7 @@ If a formal workflow is not already in place, start by creating one based of the
 
 Then create a flow chart using your favorite tool (Visio, Gliffy, or others). Here is an example flow chart for a user onboarding process:
 
-![mkdocs](.../img/um_onboarding_flow.png)
+![mkdocs](../../img/um_onboarding_flow.png)
 
 Next, define the following in a structured way (Excel, Csv, database, etc):
 - Metadata about the the organization

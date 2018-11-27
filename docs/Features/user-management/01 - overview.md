@@ -16,9 +16,9 @@ It consists of several building blocks
 
 In scenario 1, PowerApps, which is available via web, as a mobile app or as a tab in Microsoft Teams, is used as a frontend to make new user requests. Here is an example of a user onboarding PowerApp:
 
-![mkdocs](.../img/um_powerapps_01.png)
+![mkdocs](../../img/um_powerapps_01.png)
 
-![mkdocs](.../img/um_powerapps_02.png)
+![mkdocs](../../img/um_powerapps_02.png)
 
 PowerApps can easily be customized with the company`s  logo and branding. Access can be managed via user or group assignments in Azure AD.
 

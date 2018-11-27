@@ -33,7 +33,7 @@ By default, an Azure Automation runbook is started in "Azure", which means a san
 The sandbox VM can not be attached to a Virtual Network or connected to VPN or any other connections against other networks such as on-premises. The VM does have internet connectivity, so it is useful for working against publically available services such as Azure Resouce Manager or any other API.
 When there is a need to invoke runbooks against resources on-premises, there is a feature called Hybrid Runbook Workers available:
 
-![mkdocs](.../img/hybridworker.png)
+![mkdocs](../../img/hybridworker.png)
 
 *Image credit: Microsoft*
 
