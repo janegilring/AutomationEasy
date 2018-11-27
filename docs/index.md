@@ -29,6 +29,6 @@ Deploy the files with Plaster:
 
 .\deploy is the path to the deploy-folder in the downloaded version of Automation Easy.
 
-For more information, see the deployment [documentation](docs/deploy/deployment-with-plaster.md)
+For more information, see the deployment [documentation](deploy/index.md)
 
 You now have a local folder containing the selected solutions from Automation Easy. For further instructions, read the documentation for the selected solutions.
