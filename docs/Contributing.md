@@ -2,38 +2,19 @@
 
 ## Documentation
 
-We use [PlatyPS](https://github.com/PowerShell/platyPS) for project documentation and request that new modules are committed with PlatyPS formatted .md files in a docs/modulename folder in the project root. Changes to existing modules should also include updates to the corresponding documentation.
+We use [mkdocs](https://www.mkdocs.org/) for project documentation and request that new modules are committed with mkdocs formatted .md files in an appropriate location in the `docs` folder in the project root. Changes to existing modules should also include updates to the corresponding documentation. We want functions and modules docs to be generated using [PlatyPS](https://github.com/PowerShell/platyPS)
 
 You can generate .md files for your module and/or new functions using `New-MarkdownHelp -Module MyAwesomeModule -OutputFolder .\docs\MyAwesomeModule`
 
+Documentation will be automatically generated and published [here](https://automationeasy.blob.core.windows.net/)
+
 ## Pull Request Process
 
-As long as we are on a private repo, pull requests come from separate branches in stead of forks. Pull requests are easy to work with
+* Fork our repo
+* Work and commit code, we recommend developing in the `dev` branch
+* Create the Pull Request
 
-* Create a new branch locally
-
-  In VSCode, use `Ctrl+Shift+P` and select **Git: Create Branch**. Alternatively in git use
-
-  `git checkout -b branch_name`
-
-* Sync it with the upstream repo
-
-  In VSCode, click the **Publish** action, it's the little cloud with an arrow on it in the status bar
-
-  ![](https://code.visualstudio.com/assets/docs/editor/versioncontrol/git-status-bar-publish.png)
-
-  Or in git
-
-  `git push -u origin branch_name`
-
-* Work and commit code
-
-
-* Create the PR
-
-  In github, go to the **Pull Requests** tab and select **New pull request**
-
-You can continue working in the same branch after the PR has been merged to master, or delete and create new branches for each PR if you prefer.
+  In github, go to the **Pull Requests** tab and select **New pull request**. Please submit your pull request to the `dev` branch of the project.
 
 ## Code of Conduct
 
