@@ -7,7 +7,12 @@ Many aspects of IT needs to be highly customized to the different environments t
 One such example is on- and offboarding of users, which is supported by the User Management Automation solution in Automation Easy.
 In such scenarios, the solution is creating a starting point which can be built upon and customized to the specific needs of the organization it is going to be leveraged in.
 
-[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/PR%20Build)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=4)
+Full documentation is available [here](https://automationeasy.blob.core.windows.net/)
+
+| Dev build | Dev docs | Master build and docs |
+|-----------|----------|-----------------------|
+|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/PR%20Build)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=4)|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Dev%20-%20Docs%20Build)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=6)|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Master%20tests%20and%20documentation%20publish)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=5)|
+||[Dev docs](https://automationeasydev.z6.web.core.windows.net/)|[Master docs](https://automationeasy.blob.core.windows.net/)|
 
 # Deployment
 Automation Easy leverages [Plaster](https://github.com/PowerShell/Plaster) - a template-based file and project generator written in PowerShell - for deploying solution templates.
@@ -30,9 +35,9 @@ Deploy the files with Plaster:
 
 .\deploy is the path to the deploy-folder in the downloaded version of Automation Easy.
 
-For more information, see the deployment [documentation](docs/deploy/deployment-with-plaster.md)
+For more information, see the deployment [documentation](docs/Deploy/index.md)
 
 You now have a local folder containing the selected solutions from Automation Easy. For further instructions, read the documentation for the selected solutions.
 
 # Contributing
-Please do not push directly to the master branch. For Pull Request instructions, please see the contributing [instructions](CONTRIBUTING.md)
+Please do not push directly to the master branch. For Pull Request instructions, please see the contributing [instructions](docs/Contributing.md)

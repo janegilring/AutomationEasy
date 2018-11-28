@@ -3,14 +3,16 @@
 Azure Automation *Process Automation* can be leveraged to orhestrate and administer processes in an IT infrastructure.
 
 Examples of usage areas:
+
 - Automate **maintenance tasks** such as patching a failover cluster or start and stop servers in a specific order when performing planned maintenance.
 - Automate **business processes** such as user on- and offboarding, resetting passwords and automated file transfers.
-- Automate **service catalog and change request tasks** such as creation of virtual machines and configuration of backup and monitoring.
+* Automate **service catalog and change request tasks** such as creation of virtual machines and configuration of backup and monitoring.
 - **Dynamic resource allocation** based on load, for example based on a schedule. One example might be expanding a web frontend farm with more resources before the Christmas holiday season begins.
 - Respond to **alarms from monitoring systems** such as Azure Log Analytics and perform automated actions, such as scaling out a server farm based on high resource utilization.
 - **Integrations across different systems** such as interacting with an API to perform an action.
 
 Process Automation in Azure Automation is based on "runbooks", which there are 4 different kinds of:
+
 - PowerShell
 - PowerShell Workflow
 - Graphical
@@ -19,6 +21,7 @@ Process Automation in Azure Automation is based on "runbooks", which there are 4
 PowerShell runbooks is regular PowerShell scripts, with some additional features available such as dynamically retrieve encrypted credentials and variables at run time (Get-AutomationPSCredential and Get-AutomationVariable). This means a lot of tasks not natively supported by a command or PowerShell module can be automated via APIs such as REST, since PowerShell has great support for interacting with web services.
 
 There are many different ways to invoke a runbook:
+
 - Azure portal
 - Azure Resource Manager API
 - Azure Automation PowerShell module
@@ -33,7 +36,7 @@ By default, an Azure Automation runbook is started in "Azure", which means a san
 The sandbox VM can not be attached to a Virtual Network or connected to VPN or any other connections against other networks such as on-premises. The VM does have internet connectivity, so it is useful for working against publically available services such as Azure Resouce Manager or any other API.
 When there is a need to invoke runbooks against resources on-premises, there is a feature called Hybrid Runbook Workers available:
 
-![mkdocs](../img/hybridworker.png)
+![mkdocs](../../img/hybridworker.png)
 
 *Image credit: Microsoft*
 
@@ -59,6 +62,7 @@ There are also additional integration betwwen Azure Automation and Azure Log Ana
 Azure Automation is used as a building block in several solutions in the Automation Easy framework, such as the User Management Solution.
 
 In addition to being used in workflows in different scenarios such as User Management, there is an added value using Azure Automation runbooks over traditional scheduled tasks spread across different servers:
+
 - Centralized control over all output
 - Encrypted credentials
 - Automation variables, making it easy to separate values such as server names from code

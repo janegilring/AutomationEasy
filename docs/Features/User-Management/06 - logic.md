@@ -1,11 +1,13 @@
 ﻿# PowerShell modules and runbooks
 
 Automation Easy provides the following modules as starting points:
+
 - User.Management.Automation.Core - Generic commands which can be leveraged across scenarios
 - User.Management.Automation - Commands for on- and offboarding of users based on requests stored in Sharepoint-lists
 - User.Management.Automation.Sync- Commands for on- and offboarding of users based on data in an HR database
 
 Automation Easy provides the following runbooks as starting points:
+
 - New-UMUser - For scenario 1 (frontend) - leverages the User.Management.Automation module for performing actions.
 - Sync-UMUser - For scenario 2 (HR-sync) - leverages the User.Management.Automation.Sync module for performing actions.
 
