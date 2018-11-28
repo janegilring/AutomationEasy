@@ -1,3 +1,6 @@
 ﻿site_name: Automation Easy
 repo_url: https://github.com/CrayonAS/AutomationEasy
-theme: readthedocs
+theme: material
+markdown_extensions:
+  - extra
+  - sane_lists
