@@ -18,10 +18,10 @@ you can enter the following command:
 Install-Module Plaster -Scope CurrentUser
 ```
 
-Alternatively you can download a ZIP file of the latest version from Plaster`s [releases](https://github.com/PowerShell/Plaster/releases)
+Alternatively, you can download a ZIP file of the latest version from Plaster`s [releases](https://github.com/PowerShell/Plaster/releases)
 page.
 
-Next, download a copy of the latest Automation Easy version, either by cloning the repository or downloading a ZIP-file as described [here](https://help.github.com/articles/cloning-a-repository/).
+Next, download a copy of the latest Automation Easy version, either by cloning the repository or downloading it as a [ZIP-file](https://github.com/CrayonAS/AutomationEasy/archive/master.zip).
 
 Deploy the files with Plaster:
 
@@ -29,6 +29,6 @@ Deploy the files with Plaster:
 
 .\deploy is the path to the deploy-folder in the downloaded version of Automation Easy.
 
-For more information, see the deployment [documentation](deploy/index.md)
+For more information, see the deployment [documentation](Deploy/index.md)
 
 You now have a local folder containing the selected solutions from Automation Easy. For further instructions, read the documentation for the selected solutions.
