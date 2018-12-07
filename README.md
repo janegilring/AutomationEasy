@@ -1,4 +1,4 @@
-﻿# What is Automation Easy?
+﻿# What is Automation Easy
 
 Automation Easy is a framework which contains a library of templates and pre-built solutions.
 The goal is to make it easy for everyone to get started using various technologies.
@@ -14,7 +14,8 @@ Full documentation is available [here](https://automationeasy.blob.core.windows.
 |[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/PR%20Build)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=4)|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Dev%20-%20Docs%20Build)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=6)|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Master%20tests%20and%20documentation%20publish)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=5)|
 ||[Dev docs](https://automationeasydev.z6.web.core.windows.net/)|[Master docs](https://automationeasy.blob.core.windows.net/)|
 
-# Deployment
+## Deployment
+
 Automation Easy leverages [Plaster](https://github.com/PowerShell/Plaster) - a template-based file and project generator written in PowerShell - for deploying solution templates.
 
 If you have the [PowerShellGet](https://docs.microsoft.com/en-us/powershell/gallery/overview#powershellget-overviewadme) module installed (installed by default in Windows 10)
@@ -39,5 +40,6 @@ For more information, see the deployment [documentation](docs/Deploy/index.md)
 
 You now have a local folder containing the selected solutions from Automation Easy. For further instructions, read the documentation for the selected solutions.
 
-# Contributing
+## Contributing
+
 Please do not push directly to the master branch. For Pull Request instructions, please see the contributing [instructions](docs/Contributing.md)
