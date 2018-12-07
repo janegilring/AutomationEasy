@@ -28,7 +28,7 @@ In scenario 2, an example connection to an Oracle-based HR database is provided.
 
 The main difference between the scenarios is that the frontend based approach is based on requests from user (typically managers), while scenario 2 is triggered by a scheduled attached to an Azure Automation runbook.
 
-# Positioning
+## Positioning
 
 Benefits of using the User Management Automation solution includes:
 

@@ -8,21 +8,24 @@ schema: 2.0.0
 # Get-UMCompanyData
 
 ## SYNOPSIS
+
 Builds a PowerShell custom object containing company data from metadata in a Sharepoint-list
 
 ## SYNTAX
 
-```
+```powershell
 Get-UMCompanyData [[-SharePointSiteURL] <Object>] [[-SharePointCompanyListName] <Object>]
  [[-CompanyName] <Object>]
 ```
 
 ## DESCRIPTION
+
 This function builds a PowerShell custom object containing company data from metadata in a Sharepoint-list based on the specified Sharepoint parameters
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Get-UMCompanyData -SharePointSiteURL $SharePointAutomationSiteURL -SharePointCompanyListName $SharePointCompanyListName -CompanyName Contoso
 ```
@@ -30,6 +33,7 @@ PS C:\> Get-UMCompanyData -SharePointSiteURL $SharePointAutomationSiteURL -Share
 ## PARAMETERS
 
 ### -CompanyName
+
 The name of the company to retrieve metadata from
 
 ```yaml
@@ -45,6 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharePointCompanyListName
+
 The name of the Sharepoint-list containing company metadata
 
 ```yaml
@@ -60,6 +65,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharePointSiteURL
+
 The site URL to the Sharepoint-site hosting the Sharepoint-list containing company metadata
 
 ```yaml
@@ -81,6 +87,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
