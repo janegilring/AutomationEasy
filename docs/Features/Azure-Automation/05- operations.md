@@ -9,9 +9,9 @@ Hence, a backup of the worker servers might not be needed. However, if there is 
 
 Typical measurements such as CPU, memory and disk usage is recommended for the worker servers.
 
-In addition, it is recommended to configure monitoring of failed runbook jobs. The procedure to configure this is available in the article [Forward job status and job streams from Automation to Log Analytics}(https://docs.microsoft.com/en-us/azure/automation/automation-manage-send-joblogs-log-analytics).
+In addition, it is recommended to configure monitoring of failed runbook jobs. The procedure to configure this is available in the article [Forward job status and job streams from Automation to Log Analytics](https://docs.microsoft.com/en-us/azure/automation/automation-manage-send-joblogs-log-analytics).
 
-# Source control
+## Source control
 
 While it is possible to edit runbooks and variables manually in the Azure portal, the recommended approach in an enterprise environment is to store runbooks in source control and configure a Release Pipeline to publish runbooks to an Azure Automation account after a set of pre-defined tests has passed. This makes it possible to keep track of changes, and also enhances the overall quality with regards to the requirement to pass the company`s set of pre-defined tests.
 

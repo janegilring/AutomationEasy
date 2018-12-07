@@ -8,20 +8,23 @@ schema: 2.0.0
 # Get-UMHRUser
 
 ## SYNOPSIS
+
 {{Fill in the Synopsis}}
 
 ## SYNTAX
 
-```
+```powershell
 Get-UMHRUser [[-Settings] <Object>]
 ```
 
 ## DESCRIPTION
+
 {{Fill in the Description}}
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> {{ Add example code here }}
 ```
@@ -31,6 +34,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Settings
+
 {{Fill Settings Description}}
 
 ```yaml
@@ -52,6 +56,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS

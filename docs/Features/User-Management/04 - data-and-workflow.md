@@ -11,10 +11,10 @@ Then create a flow chart using your favorite tool (Visio, Gliffy, or others). He
 Next, define the following in a structured way (Excel, Csv, database, etc):
 
 - Metadata about the the organization
-    - Companies
-    - Departments
+  - Companies
+  - Departments
 - Which Active Directory groups new users should be added to
 - Which applications new users should be provisioned in
-    - Verify whether all required applications supports automated provisioning, either via group membership or an API
+  - Verify whether all required applications supports automated provisioning, either via group membership or an API
 
 The gathered data will be leveraged in the next step, [Establish infrastructure](/05%20-%20infrastructure.md)
