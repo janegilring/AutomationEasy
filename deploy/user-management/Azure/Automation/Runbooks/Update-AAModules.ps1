@@ -78,8 +78,9 @@ param(
     [Parameter(Mandatory=$false)]
     [String] $NewModuleName
 )
+$VerbosePreference = "continue"
+Write-Verbose -Message "Starting Runbook at time: $(get-Date -format r). Running PS version: $($PSVersionTable.PSVersion)"
 $VerbosePreference = "silentlycontinue"
-Write-Output -InputObject "Starting Runbook at time: $(get-Date -format r). Running PS version: $($PSVersionTable.PSVersion)"
 Import-Module -Name AzureRM.Profile, AzureRM.Automation,AzureRM.Resources -ErrorAction Continue -ErrorVariable oErr
 If($oErr) {
     Write-Error -Message "Failed to load needed modules for Runbook. Error: $($oErr.Message)" -ErrorAction Stop

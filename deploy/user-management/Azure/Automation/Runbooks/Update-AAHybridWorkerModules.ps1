@@ -19,7 +19,7 @@ PREREQUISITES:
 #Requires -Version 5.0
 #Requires -Module AzureRM.Profile, AzureRM.Automation
 $VerbosePreference = "continue"
-Write-Verbose -InputObject  "Starting Runbook at time: $(get-Date -format r). Running PS version: $($PSVersionTable.PSVersion). Worker Name: $($env:COMPUTERNAME)"
+Write-Verbose -Message  "Starting Runbook at time: $(get-Date -format r). Running PS version: $($PSVersionTable.PSVersion). Worker Name: $($env:COMPUTERNAME)"
 $VerbosePreference = "silentlycontinue"
 Import-Module -Name AzureRM.Profile, AzureRM.Automation -ErrorAction Continue -ErrorVariable oErr
 If($oErr) {
