@@ -40,7 +40,7 @@ $AzureRunAsCertificate = Get-AutomationCertificate -Name "AzureRunAsCertificate"
 
 $VerbosePreference = "continue"
 try {
-    TODO: Have check for running under admin rights
+    #TODO: Have check for running under admin rights
 
 #region Authenticate to Azure
     # ADD certificate if it is not in the cert store of the user
