@@ -17,10 +17,10 @@ PREREQUISITES:
             AAhybridWorkerAdminCredentials  = Credential object that contains username & password for an account that is local admin on the hybrid worker(s).
                                               If hybrid worker group contains more than one worker, the account must be allowed to do remoting to all the other workers.
 #>
-#Requires -Version 5.0
+#Requires -Version 5.1
 #Requires -Module AzureRM.Profile, AzureRM.Automation
 $VerbosePreference = "continue"
-Write-Verbose -Message  "Starting Runbook at time: $(get-Date -format r). Running PS version: $($PSVersionTable.PSVersion). Worker Name: $($env:COMPUTERNAME)"
+Write-Verbose -Message  "Starting Runbook at time: $(get-Date -format r).`nRunning PS version: $($PSVersionTable.PSVersion).`nWorker Name: $($env:COMPUTERNAME)"
 $VerbosePreference = "silentlycontinue"
 Import-Module -Name AzureRM.Profile, AzureRM.Automation -ErrorAction Continue -ErrorVariable oErr
 If($oErr) {
@@ -87,11 +87,11 @@ try {
                             Where-Object {$_.ProvisioningState -eq "Succeeded"}
 
     # Get names of hybrid workers
-    Write-Verbose -Message "Fetching name of hybrid worker group"
+    Write-Verbose -Message "Fetching name of hybrid worker(s)"
     $AAworkers = (Get-AzureRMAutomationHybridWorkerGroup -Name $AutomationHybridWorkerName -ResourceGroupName $AutomationResourceGroupName -AutomationAccountName $AutomationAccountName -ErrorAction SilentlyContinue -ErrorVariable oErr).RunbookWorker.Name
     if($oErr)
     {
-        Write-Error -Message "Failed to fetch hybrid worker group" -ErrorAction Stop
+        Write-Error -Message "Failed to fetch hybrid worker(s)" -ErrorAction Stop
     }
 #endregion
 
@@ -177,11 +177,10 @@ try {
             }
         }
 
-        $VerbosePreference = "Continue"
         ForEach($InstalledModule in $InstalledModules)
         {
             # Only update modules instelled from gallery
-            if($InstalledModule.Repository -eq  $Using:ModuleRepositoryName)
+            if($InstalledModule.Repository -eq $Using:ModuleRepositoryName)
             {
                 # Redirecting Verbose stream to Output stream so log can be transfered back
                 $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
@@ -207,7 +206,7 @@ try {
             }
             else
             {
-                Write-Output -InputObject "Module: $($InstalledModule.Name) not in  $($Using:ModuleRepositoryName), therefore will not autoupdate"
+                Write-Output -InputObject "Module: $($InstalledModule.Name) is not in $($Using:ModuleRepositoryName), therefore will not autoupdate"
             }
         }
     }
