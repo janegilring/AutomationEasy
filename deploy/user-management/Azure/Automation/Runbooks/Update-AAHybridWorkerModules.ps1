@@ -144,7 +144,7 @@ try {
                 #TODO: Better handling if multiple modules are returned from search
                 if(($ModuleFound.GetTYpe()).BaseType.Name -eq "Object")
                 {
-                    Write-Output -InputObject "Module: $($ModuleFound.Name) found in $($Using:ModuleRepositoryName) and will be installed on worker"
+                    Write-Output -InputObject "Module: $($ModuleFound.Name) found in repository: $($Using:ModuleRepositoryName) and will be installed on worker"
                     # TODO: Option to remove older module versions
                     # Check if module is already installed / can also be used to find older versions and cleanup
                     if((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
