@@ -226,6 +226,7 @@ try {
         $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays(-3) |
                     Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
         Write-Output -InputObject "Invoking module update against worker: $AAworker"
+        # Dont start updte job if other runbooks are still in a running state
         if(-not [bool]($AAjobs.HybridWorker -match $AAworker))
         {
             Invoke-Command -ComputerName $AAworker -Credential $AAworkerCredential -ScriptBlock $ScriptBlock -HideComputerName -ErrorAction Continue -ErrorVariable oErr
