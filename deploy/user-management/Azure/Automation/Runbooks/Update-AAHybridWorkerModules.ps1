@@ -94,15 +94,6 @@ try {
     }
 #endregion
 
-    Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
-    $VerbosePreference = "silentlycontinue"
-    Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction Continue -ErrorVariable oErr
-    if($oErr)
-    {
-        Write-Error -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME)" -ErrorAction Stop
-    }
-    Write-Output -InputObject "Runbook is currently running on worker: $(([System.Net.Dns]::GetHostByName(($env:computerName))).HostName)"
-    # Start a remote session against the worker not currently running on
 #region Code to run remote
     $ScriptBlock =
     {
@@ -222,12 +213,19 @@ try {
 #endregion
 
 #region Logic for running code remote on workers
+    Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
+    $VerbosePreference = "silentlycontinue"
+    Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction Continue -ErrorVariable oErr
+    if($oErr)
+    {
+        Write-Error -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME)" -ErrorAction Stop
+    }
+    Write-Output -InputObject "Runbook is currently running on worker: $(([System.Net.Dns]::GetHostByName(($env:computerName))).HostName)"
     ForEach($AAworker in $AAworkers)
     {
-        $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName |
+        $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays(-3) |
                     Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
         Write-Output -InputObject "Invoking module update against worker: $AAworker"
-        #TODO: Check if Get-AzureRMAutomationJob has the worker node name in return object, check that Hybridworker parameter is of type string, check that compare works as intended
         if(-not [bool]($AAjobs.HybridWorker -match $AAworker))
         {
             Invoke-Command -ComputerName $AAworker -Credential $AAworkerCredential -ScriptBlock $ScriptBlock -HideComputerName -ErrorAction Continue -ErrorVariable oErr
