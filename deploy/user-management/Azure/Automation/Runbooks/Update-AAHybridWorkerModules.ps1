@@ -28,6 +28,7 @@ If($oErr) {
 }
 
 #region Variables
+$RunbookJobHistoryDays = -5
 $RunbookName = "Update-AAHybridWorkerModules"
 $ModuleRepositoryName = "PSGallery"
 $AutomationResourceGroupName = Get-AutomationVariable -Name "AAresourceGroupName" -ErrorAction Stop
@@ -223,7 +224,7 @@ try {
     Write-Output -InputObject "Runbook is currently running on worker: $(([System.Net.Dns]::GetHostByName(($env:computerName))).HostName)"
     ForEach($AAworker in $AAworkers)
     {
-        $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays(-3) |
+        $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays($RunbookJobHistoryDays) |
                     Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
         Write-Output -InputObject "Invoking module update against worker: $AAworker"
         # Dont start updte job if other runbooks are still in a running state
