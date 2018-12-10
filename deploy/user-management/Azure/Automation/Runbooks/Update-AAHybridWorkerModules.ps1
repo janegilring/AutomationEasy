@@ -144,13 +144,13 @@ try {
                 #TODO: Better handling if multiple modules are returned from search
                 if(($ModuleFound.GetTYpe()).BaseType.Name -eq "Object")
                 {
-                    Write-Output -InputObject "Module: $($ModuleFound.Name) is not on worker but available in $($Using:ModuleRepositoryName)"
+                    Write-Output -InputObject "Module: $($ModuleFound.Name) found in $($Using:ModuleRepositoryName) and will be installed on worker"
                     # TODO: Option to remove older module versions
                     # Check if module is already installed / can also be used to find older versions and cleanup
                     if((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
                     {
                         # Install-Module will by default install dependecies according to documentation
-                        $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                        $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                         if($oErr)
                         {
                             Write-Error -Message "Failed to install module: $($ModuleFound.Name)" -ErrorAction Continue
