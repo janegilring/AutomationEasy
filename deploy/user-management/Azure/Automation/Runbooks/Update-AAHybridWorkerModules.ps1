@@ -8,13 +8,14 @@ DESCRITPION:
             It will also update independend modules installed from PSGallery to latest version.
 
             Note:
-                All manually uploaded modules to AA will not be handled by this runbooks, and should be handled by other means
+                All manually uploaded (not imported from PSGallery) modules to AA will not be handled by this runbooks, and should be handled by other means
 
 PREREQUISITES:
             AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
             AAaccountName                   = Name of Azure Automation account
             AAhybridWorkerGroupName         = Name of Azure Automation hybrid worker group
-            AAhybridWorkerAdminCredentials  = Credential object that contains username & password for an account that is local admin on the hybrid workers
+            AAhybridWorkerAdminCredentials  = Credential object that contains username & password for an account that is local admin on the hybrid worker(s).
+                                              If hybrid worker group contains more than one worker, the account must be allowed to do remoting to all the other workers.
 #>
 #Requires -Version 5.0
 #Requires -Module AzureRM.Profile, AzureRM.Automation
@@ -27,15 +28,16 @@ If($oErr) {
 }
 
 #region Variables
-$RepositoryName = "PSGallery"
-$AutomationResourceGroupName = Get-AutomationVariable -Name "AAresourceGroupName"
-$AutomationAccountName = Get-AutomationVariable -Name "AAaccountName"
-$AutomationHybridWorkerName = Get-AutomationVariable -Name "AAhybridWorkerGroupName"
-$AAworkerCredential = Get-AutomationVariable -Name "AAhybridWorkerAdminCredentials"
+$RunbookName = "Update-AAHybridWorkerModules"
+$ModuleRepositoryName = "PSGallery"
+$AutomationResourceGroupName = Get-AutomationVariable -Name "AAresourceGroupName" -ErrorAction Stop
+$AutomationAccountName = Get-AutomationVariable -Name "AAaccountName" -ErrorAction Stop
+$AutomationHybridWorkerName = Get-AutomationVariable -Name "AAhybridWorkerGroupName" -ErrorAction Stop
+$AAworkerCredential = Get-AutomationPSCredential -Name "AAhybridWorkerAdminCredentials" -ErrorAction Stop
 
 # Azure Automation Login for Resource Manager
-$AzureConnection = Get-AutomationConnection -Name "AzureRunAsConnection"
-$AzureRunAsCertificate = Get-AutomationCertificate -Name "AzureRunAsCertificate"
+$AzureConnection = Get-AutomationConnection -Name "AzureRunAsConnection" -ErrorAction Stop
+$AzureRunAsCertificate = Get-AutomationCertificate -Name "AzureRunAsCertificate" -ErrorAction Stop
 #endregion
 
 $VerbosePreference = "continue"
@@ -62,7 +64,7 @@ try {
     {
         Write-Error -Message "Private key of login certificate is NOT accessible, check you user certificate store if the private key is missing or damaged" -ErrorAction Stop
     }
-    Add-AzureRmAccount `
+    $Null = Add-AzureRmAccount `
     -ServicePrincipal `
     -TenantId $AzureConnection.TenantId `
     -ApplicationId $AzureConnection.ApplicationId `
@@ -70,7 +72,7 @@ try {
     if($oErr) {
         Write-Error -Message "Failed to connect to Azure." -ErrorAction Stop
     }
-    Select-AzureRmSubscription -SubscriptionId $AzureConnection.SubscriptionID -ErrorAction Continue -ErrorVariable oErr
+    $Null = Select-AzureRmSubscription -SubscriptionId $AzureConnection.SubscriptionID -ErrorAction Continue -ErrorVariable oErr
     If($oErr)
     {
         Write-Error -Message "Failed to select Azure subscription." -ErrorAction Stop
@@ -79,9 +81,12 @@ try {
 
 #region Get data from AA
     # Get modules installed in AA
-    $AAInstalledModules = Get-AzureRMAutomationModule -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName
+    Write-Verbose -Message "Retrieving installed modues in AA"
+    $AAInstalledModules = Get-AzureRMAutomationModule -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName |
+                            Where-Object {$_.ProvisioningState -eq "Succeeded"}
 
-	# Get names of hybrid workers
+    # Get names of hybrid workers
+    Write-Verbose -Message "Fetching name of hybrid worker group"
     $AAworkers = (Get-AzureRMAutomationHybridWorkerGroup -Name $AutomationHybridWorkerName -ResourceGroupName $AutomationResourceGroupName -AutomationAccountName $AutomationAccountName -ErrorAction SilentlyContinue -ErrorVariable oErr).RunbookWorker.Name
     if($oErr)
     {
@@ -89,14 +94,15 @@ try {
     }
 #endregion
 
-    Write-Verbose -InputObject "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
+    Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
+    $VerbosePreference = "silentlycontinue"
     Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction Continue -ErrorVariable oErr
     if($oErr)
     {
         Write-Error -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME)" -ErrorAction Stop
     }
     Write-Output -InputObject "Runbook is currently running on worker: $(([System.Net.Dns]::GetHostByName(($env:computerName))).HostName)"
-    # Start a removete session against the worker not currently running on
+    # Start a remote session against the worker not currently running on
 #region Code to run remote
     $ScriptBlock =
     {
@@ -110,21 +116,23 @@ try {
             Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
         }
         # Find missing modules on hybrid worker
-        $MissingModules = Compare-Object -ReferenceObject $Using:AAInstalledModules -DifferenceObject $InstalledModules -Property Name | Where-Object {$_.SideIndicator -eq "<="}
+        $MissingModules = Compare-Object -ReferenceObject $Using:AAInstalledModules -DifferenceObject $InstalledModules -Property Name |
+            Where-Object {$_.SideIndicator -eq "<="} | Select-Object -Property Name
 
         # Add missing modules from Gallery
         ForEach($MissingModule in $MissingModules.Name)
         {
+            Write-Output -InputObject "Module: $MissingModule is missing on hybrid worker"
             # Not optimized for speed
             # Check if it is a PSGallery module
             try
             {
                 # ErrorVariable does not get populated, try/catch is a workaround to get at the error
-                $ModuleFound = Find-Module -Name $MissingModule -Repository $RepositoryName -ErrorAction Stop
+                $ModuleFound = Find-Module -Name $MissingModule -Repository $Using:ModuleRepositoryName -ErrorAction Stop
             }
             catch [System.Exception]
             {
-                Write-Verbose -Message "No match found for module name: $MissingModule in PSGallery"
+                Write-Warning -Message "No match found for module name: $MissingModule in $($Using:ModuleRepositoryName)"
             }
             catch
             {
@@ -133,22 +141,31 @@ try {
 
             if($ModuleFound)
             {
-                if(($ModuleFound.GetTYpe()).BaseType -eq "System.Object")
+                #TODO: Better handling if multiple modules are returned from search
+                if(($ModuleFound.GetTYpe()).BaseType.Name -eq "Object")
                 {
+                    Write-Output -InputObject "Module: $($ModuleFound.Name) is not on worker but available in $($Using:ModuleRepositoryName)"
                     # TODO: Option to remove older module versions
                     # Check if module is already installed / can also be used to find older versions and cleanup
-                    if(-not (Get-Module -Name $ModuleFound.Name -ListAvailable))
+                    if((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
                     {
                         # Install-Module will by default install dependecies according to documentation
-                        Install-Module -Name $ModuleFound.Name -AllowClobber -Confirm:$False -ErrorAction Continue -ErrorVariable oErr
+                        $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                         if($oErr)
                         {
                             Write-Error -Message "Failed to install module: $($ModuleFound.Name)" -ErrorAction Continue
+                            $oErr = $Null
                         }
                         else
                         {
                             # New module added
                             $newModule = $true
+                        }
+                        if($VerboseLog)
+                        {
+                            Write-Output -InputObject "Installing Module: $($ModuleFound.Name)"
+                            # Outputting the whole verbose log
+                            $VerboseLog
                         }
                     }
                 }
@@ -169,11 +186,10 @@ try {
         }
 
         $VerbosePreference = "Continue"
-        # Redirect Verbose log stream to output stream
         ForEach($InstalledModule in $InstalledModules)
         {
             # Only update modules instelled from gallery
-            if($InstalledModule.Repository -eq $RepositoryName)
+            if($InstalledModule.Repository -eq  $Using:ModuleRepositoryName)
             {
                 # Redirecting Verbose stream to Output stream so log can be transfered back
                 $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
@@ -199,7 +215,7 @@ try {
             }
             else
             {
-                Write-Output -InputObject "Module: $($InstalledModule.Name) not in PSGallery, therefore will not autoupdate"
+                Write-Output -InputObject "Module: $($InstalledModule.Name) not in  $($Using:ModuleRepositoryName), therefore will not autoupdate"
             }
         }
     }
@@ -209,7 +225,7 @@ try {
     ForEach($AAworker in $AAworkers)
     {
         $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName |
-                    Where-Object {$_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New" ) }
+                    Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
         Write-Output -InputObject "Invoking module update against worker: $AAworker"
         #TODO: Check if Get-AzureRMAutomationJob has the worker node name in return object, check that Hybridworker parameter is of type string, check that compare works as intended
         if(-not [bool]($AAjobs.HybridWorker -match $AAworker))
