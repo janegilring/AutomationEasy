@@ -1,5 +1,6 @@
 Param(
-[bool]$UpdateAllHybridGoups = $true
+[bool]$UpdateAllHybridGoups = $true,
+[bool]$ForceInstallModule = $false
 )
 <#
 NAME:       Update-AAHybridWorkerModules
@@ -8,10 +9,11 @@ EMAIL:      morten.lerudjordet@rewired.no
 
 DESCRITPION:
             This runbook will check installed modules in AA account and attempt to download these from PSGallery to the hybrid workers
-            It will also update independend modules installed from PSGallery to latest version.
+            It will also update independend modules installed from PSGallery to latest version (using Install-Module).
 
             Note:
                 All manually uploaded (not imported from PSGallery) modules to AA will not be handled by this runbooks, and should be handled by other means
+                Run Get-InstalledModule in PS command windows (not in ISE) to check that Repository is set to PSGallery
 
 PREREQUISITES:
             AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
@@ -23,6 +25,11 @@ PREREQUISITES:
             If $true the runbook will try to remote to all hybrid workers in every hybrid group attached to AA account
             $false will only update the hybrid workers in the same hybrid group the update runbook is running on
             Default is $true
+
+.PARAMETER ForceReinstallofModule
+            If $true the runbook will try to do a install-module if update-module fails
+            $false will not try to force reinstall of module
+            Default is $false
 #>
 
 #Requires -Version 5.1
@@ -124,6 +131,55 @@ try {
         if($oErr) {
             Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
         }
+        Write-Output -InputObject "Making sure PowerShellGet is installed and up to date"
+        # Make sure PSGet is up to date and installed
+        if($InstalledModules.Name -match "PowerShellGet")
+        {
+            # Redirecting Verbose stream to Output stream so log can be transfered back
+            $VerboseLog = Update-Module -Name PowerShellGet -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+            # continue on error
+            if($oErr)
+            {
+                Write-Error -Message "Failed to update module: PowerShellGet" -ErrorAction Continue
+                $oErr = $Null
+            }
+            if($VerboseLog)
+            {
+                if($VerboseLog -like "*Skipping installed module*")
+                {
+                    Write-Output -InputObject "Module: PowerShellGet is up to date"
+                }
+                else
+                {
+                    Write-Output -InputObject "Updating Module: PowerShellGet"
+                    # Streaming verbose log
+                    $VerboseLog
+                    $VerboseLog = $Null
+                }
+            }
+        }
+        else
+        {
+            $VerboseLog = Install-Module -Name PowerShellGet -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+            if($oErr)
+            {
+                Write-Error -Message "Failed to install module: PowerShellGet" -ErrorAction Continue
+                $oErr = $Null
+            }
+            else
+            {
+                # New module added
+                $newModule = $true
+            }
+            if($VerboseLog)
+            {
+                Write-Output -InputObject "Installing Module: PowerShellGet"
+                # Outputting the whole verbose log
+                $VerboseLog
+                $VerboseLog = $Null
+            }
+        }
+
         # Find missing modules on hybrid worker
         $MissingModules = Compare-Object -ReferenceObject $Using:AAInstalledModules -DifferenceObject $InstalledModules -Property Name |
             Where-Object {$_.SideIndicator -eq "<="} | Select-Object -Property Name
@@ -175,6 +231,7 @@ try {
                             Write-Output -InputObject "Installing Module: $($ModuleFound.Name)"
                             # Outputting the whole verbose log
                             $VerboseLog
+                            $VerboseLog = $Null
                         }
                     }
                 }
@@ -202,8 +259,7 @@ try {
         {
             # Only update modules installed from PSgallery
             #Write-Output -InputObject "Module: $($InstalledModule.Name) is from repository: $($InstalledModule.Repository)"
-            # Bug where sometimes repository value is populated with https://www.powershellgallery.com/api/v2/ instead of just PSGallery
-            if(($InstalledModule.Repository -eq $Using:ModuleRepositoryName) -or ($InstalledModule.Repository -eq "https://www.powershellgallery.com/api/v2/"))
+            if( $InstalledModule.Repository -eq $Using:ModuleRepositoryName )
             {
                 # Redirecting Verbose stream to Output stream so log can be transfered back
                 $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
@@ -212,6 +268,22 @@ try {
                 {
                     Write-Error -Message "Failed to update module: $($InstalledModule.Name)" -ErrorAction Continue
                     $oErr = $Null
+                    if($Using:ForceInstallModule)
+                    {
+                        $VerboseLog = Install-Module -Name $InstalledModule.Name -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                        if($oErr)
+                        {
+                            Write-Error -Message "Failed to install module: $($InstalledModule.Name)" -ErrorAction Continue
+                            $oErr = $Null
+                        }
+                        if($VerboseLog)
+                        {
+                            Write-Output -InputObject "Forcing install of module: $($InstalledModule.Name) from $($Using:ModuleRepositoryName)"
+                            # Streaming verbose log
+                            $VerboseLog
+                            $VerboseLog = $Null
+                        }
+                    }
                 }
                 if($VerboseLog)
                 {
@@ -224,6 +296,7 @@ try {
                         Write-Output -InputObject "Updating Module: $($InstalledModule.Name)"
                         # Streaming verbose log
                         $VerboseLog
+                        $VerboseLog = $Null
                     }
                 }
             }
