@@ -302,7 +302,28 @@ try {
             }
             else
             {
-                Write-Output -InputObject "Module: $($InstalledModule.Name) is not in $($Using:ModuleRepositoryName), therefore will not autoupdate"
+                # Check if modules not on new PSGet logic can be installed anew
+                if(Find-Module -Name $InstalledModule.Name -Repository $Using:ModuleRepositoryName -ErrorAction SilentlyContinue)
+                {
+                    Write-Output -InputObject "Module: $($InstalledModule.Name) installed on older version of PSGet, running new install"
+                    $VerboseLog = Install-Module -Name $InstalledModule.Name -AllowClobber -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                    if($oErr)
+                    {
+                        Write-Error -Message "Failed to install module: $($InstalledModule.Name)" -ErrorAction Continue
+                        $oErr = $Null
+                    }
+                    if($VerboseLog)
+                    {
+                        Write-Output -InputObject "Forcing install of module: $($InstalledModule.Name) from $($Using:ModuleRepositoryName)"
+                        # Streaming verbose log
+                        $VerboseLog
+                        $VerboseLog = $Null
+                    }
+                }
+                else
+                {
+                    Write-Output -InputObject "Module: $($InstalledModule.Name) is not in $($Using:ModuleRepositoryName), therefore will not autoupdate"
+                }
             }
         }
     }
