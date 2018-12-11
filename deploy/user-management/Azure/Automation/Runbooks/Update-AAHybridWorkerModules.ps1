@@ -1,3 +1,5 @@
+#Requires -Version 5.1
+#Requires -Module AzureRM.Profile, AzureRM.Automation
 Param(
 [bool]$UpdateAllHybridGoups = $true,
 [bool]$ForceInstallModule = $false
@@ -13,13 +15,16 @@ DESCRITPION:
 
             Note:
                 All manually uploaded (not imported from PSGallery) modules to AA will not be handled by this runbooks, and should be handled by other means
-                Run Get-InstalledModule in PS command windows (not in ISE) to check that Repository is set to PSGallery
+                Run Get-InstalledModule in PS command window (not in ISE) to check that Repository is set to PSGallery
 
 PREREQUISITES:
-            AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
-            AAaccountName                   = Name of Azure Automation account
-            AAhybridWorkerAdminCredentials  = Credential object that contains username & password for an account that is local admin on the hybrid worker(s).
-                                              If hybrid worker group contains more than one worker, the account must be allowed to do remoting to all the other workers.
+            Powershell version 5.1 on hybrid workers
+            Latest AzureRM & AzureRM.Automation module installed on hybrid workers for first time run
+            Azure Automation Assets:
+                AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
+                AAaccountName                   = Name of Azure Automation account
+                AAhybridWorkerAdminCredentials  = Credential object that contains username & password for an account that is local admin on the hybrid worker(s).
+                                                If hybrid worker group contains more than one worker, the account must be allowed to do remoting to all the other workers.
 
 .PARAMETER UpdateAllHybridGoups
             If $true the runbook will try to remote to all hybrid workers in every hybrid group attached to AA account
@@ -27,37 +32,43 @@ PREREQUISITES:
             Default is $true
 
 .PARAMETER ForceReinstallofModule
-            If $true the runbook will try to do a install-module if update-module fails
+            If $true the runbook will try to force a install-module if update-module fails
             $false will not try to force reinstall of module
             Default is $false
 #>
-
-#Requires -Version 5.1
-#Requires -Module AzureRM.Profile, AzureRM.Automation
-$VerbosePreference = "continue"
-Write-Verbose -Message  "Starting Runbook at time: $(get-Date -format r).`nRunning PS version: $($PSVersionTable.PSVersion).`nWorker Name: $($env:COMPUTERNAME)"
-$VerbosePreference = "silentlycontinue"
-Import-Module -Name AzureRM.Profile, AzureRM.Automation -ErrorAction Continue -ErrorVariable oErr
-If($oErr) {
-    Write-Error -Message "Failed to load needed modules for Runbook." -ErrorAction Stop
-}
+try {
+    # just incase Requires does not work
+    if($PSVersionTable.PSVersion -lt 5.1)
+    {
+        Write-Error -Message "Powershell version must be 5.1 or higher. Current version: $($PSVersionTable.PSVersion)" -ErrorAction Stop
+    }
+    $VerbosePreference = "continue"
+    Write-Verbose -Message  "Starting Runbook at time: $(Get-Date -format r).`nRunning PS version: $($PSVersionTable.PSVersion).`nWorker Name: $($env:COMPUTERNAME)"
+    $VerbosePreference = "silentlycontinue"
+    Import-Module -Name AzureRM.Profile, AzureRM.Automation -ErrorAction Continue -ErrorVariable oErr
+    If($oErr) {
+        Write-Error -Message "Failed to load needed modules for Runbook." -ErrorAction Stop
+    }
 
 #region Variables
-$RunbookJobHistoryDays = -1
-$RunbookName = "Update-AAHybridWorkerModules"
-$ModuleRepositoryName = "PSGallery"
-$AutomationResourceGroupName = Get-AutomationVariable -Name "AAresourceGroupName" -ErrorAction Stop
-$AutomationAccountName = Get-AutomationVariable -Name "AAaccountName" -ErrorAction Stop
-$AAworkerCredential = Get-AutomationPSCredential -Name "AAhybridWorkerAdminCredentials" -ErrorAction Stop
+    # Azure Automation environment
+    $AutomationResourceGroupName = Get-AutomationVariable -Name "AAresourceGroupName" -ErrorAction Stop
+    $AutomationAccountName = Get-AutomationVariable -Name "AAaccountName" -ErrorAction Stop
+    $AAworkerCredential = Get-AutomationPSCredential -Name "AAhybridWorkerAdminCredentials" -ErrorAction Stop
 
-# Azure Automation Login for Resource Manager
-$AzureConnection = Get-AutomationConnection -Name "AzureRunAsConnection" -ErrorAction Stop
-$AzureRunAsCertificate = Get-AutomationCertificate -Name "AzureRunAsCertificate" -ErrorAction Stop
+    # Azure Automation Login for Resource Manager
+    $AzureConnection = Get-AutomationConnection -Name "AzureRunAsConnection" -ErrorAction Stop
+    $AzureRunAsCertificate = Get-AutomationCertificate -Name "AzureRunAsCertificate" -ErrorAction Stop
+
+    # Local variables
+    $RunbookName = "Update-AAHybridWorkerModules"
+    $ModuleRepositoryName = "PSGallery"
+    $RunbookJobHistoryDays = -1
 #endregion
 
-$VerbosePreference = "continue"
-try {
-    #TODO: Have check for running under admin rights
+    $VerbosePreference = "continue"
+
+#TODO: Have check for running under admin rights
 
 #region Authenticate to Azure
     # ADD certificate if it is not in the cert store of the user
@@ -92,6 +103,15 @@ try {
     {
         Write-Error -Message "Failed to select Azure subscription." -ErrorAction Stop
     }
+<#
+    Login-AzureRmAccount -ServicePrincipal -ApplicationId $AzureConnection.ApplicationId `
+    -CertificateThumbprint $AzureConnection.CertificateThumbprint -TenantId $AzureConnection.TenantId `
+    -SubscriptionId $AzureConnection.SubscriptionId -ErrorAction Continue -ErrorVariable oErr
+    if($oErr)
+    {
+        Write-Error -Message "Failed to login to Azure" -ErrorAction Stop
+    }
+#>
 #endregion
 
 #region Get data from AA
@@ -114,70 +134,46 @@ try {
 #region Code to run remote
     $ScriptBlock =
     {
-        Import-Module -Name Packagemanagement -ErrorAction Continue -ErrorVariable oErr
-        if($oErr) {
-            Write-Error -Message "Failed to load Packagemanagement module." -ErrorAction Stop
+        Import-Module -Name PowerShellGet -ErrorAction Continue -ErrorVariable oErr
+        if($oErr)
+        {
+            Write-Error -Message "Failed to load PowerShellGet module." -ErrorAction Continue
         }
+
         # Check if PSGallery is trusted, if not make it so
-        $Repository = Get-PSRepository | Where-Object -FilterScript {$_.Name -eq $Using:ModuleRepositoryName}
+        $Repository = Get-PSRepository -ErrorAction Continue -ErrorVariable oErr | Where-Object -FilterScript {$_.Name -eq $Using:ModuleRepositoryName}
+        if($oErr)
+        {
+            Write-Error -Message "Failed to get repository information" -ErrorAction Stop
+        }
+
         if($Repository.InstallationPolicy -eq "Untrusted")
         {
             Set-PSRepository -Name $Using:ModuleRepositoryName -InstallationPolicy Trusted
             Write-Output -InputObject "Added trust for repositiry: $($Using:ModuleRepositoryName)"
         }
 
+        Write-Output -InputObject "Forcing install of PowerShellGet from $($Using:ModuleRepositoryName)"
+
+        $VerboseLog = Install-Module -Name PowerShellGet -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+        if($oErr)
+        {
+            Write-Error -Message "Failed to install module: PowerShellGet" -ErrorAction Continue
+            $oErr = $Null
+        }
+        if($VerboseLog)
+        {
+            Write-Output -InputObject "Installing Module: PowerShellGet"
+            # Outputting the whole verbose log
+            #$VerboseLog
+            $VerboseLog = $Null
+        }
+
         # Get installed modules
         $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr
-        if($oErr) {
+        if($oErr)
+        {
             Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
-        }
-        Write-Output -InputObject "Making sure PowerShellGet is installed and up to date"
-        # Make sure PSGet is up to date and installed
-        if($InstalledModules.Name -match "PowerShellGet")
-        {
-            # Redirecting Verbose stream to Output stream so log can be transfered back
-            $VerboseLog = Update-Module -Name PowerShellGet -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
-            # continue on error
-            if($oErr)
-            {
-                Write-Error -Message "Failed to update module: PowerShellGet" -ErrorAction Continue
-                $oErr = $Null
-            }
-            if($VerboseLog)
-            {
-                if($VerboseLog -like "*Skipping installed module*")
-                {
-                    Write-Output -InputObject "Module: PowerShellGet is up to date"
-                }
-                else
-                {
-                    Write-Output -InputObject "Updating Module: PowerShellGet"
-                    # Streaming verbose log
-                    $VerboseLog
-                    $VerboseLog = $Null
-                }
-            }
-        }
-        else
-        {
-            $VerboseLog = Install-Module -Name PowerShellGet -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
-            if($oErr)
-            {
-                Write-Error -Message "Failed to install module: PowerShellGet" -ErrorAction Continue
-                $oErr = $Null
-            }
-            else
-            {
-                # New module added
-                $newModule = $true
-            }
-            if($VerboseLog)
-            {
-                Write-Output -InputObject "Installing Module: PowerShellGet"
-                # Outputting the whole verbose log
-                $VerboseLog
-                $VerboseLog = $Null
-            }
         }
 
         # Find missing modules on hybrid worker
@@ -254,7 +250,12 @@ try {
                 Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
             }
         }
-
+        Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
+        Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction SilentlyContinue -ErrorVariable oErr
+        if($oErr)
+        {
+            Write-Warning -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway."
+        }
         ForEach($InstalledModule in $InstalledModules)
         {
             # Only update modules installed from PSgallery
@@ -303,10 +304,12 @@ try {
             else
             {
                 # Check if modules not on new PSGet logic can be installed anew
-                if(Find-Module -Name $InstalledModule.Name -Repository $Using:ModuleRepositoryName -ErrorAction SilentlyContinue)
+                $ModuleFound = $Null
+                $ModuleFound = Find-Module -Name $InstalledModule.Name -Repository $Using:ModuleRepositoryName -ErrorAction SilentlyContinue
+                if($ModuleFound)
                 {
                     Write-Output -InputObject "Module: $($InstalledModule.Name) installed on older version of PSGet, running new install"
-                    $VerboseLog = Install-Module -Name $InstalledModule.Name -AllowClobber -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                    $VerboseLog = Install-Module -Name $InstalledModule.Name -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                     if($oErr)
                     {
                         Write-Error -Message "Failed to install module: $($InstalledModule.Name)" -ErrorAction Continue
@@ -330,13 +333,6 @@ try {
 #endregion
 
 #region Logic for running code remote on workers
-    Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
-    $VerbosePreference = "silentlycontinue"
-    Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction Continue -ErrorVariable oErr
-    if($oErr)
-    {
-        Write-Error -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME)" -ErrorAction Stop
-    }
     $CurrentWorker = ([System.Net.Dns]::GetHostByName(($env:computerName))).HostName
     $CurrentWorkerGroup = $AAworkerGroups | Where-Object -FilterScript {$_.RunbookWorker.Name -match $CurrentWorker} | Select-Object -Property Name
 
@@ -351,7 +347,7 @@ try {
         {
             Write-Output -InputObject "Updating hybrid workers in group: $($AAworkerGroup.Name)"
             $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays($RunbookJobHistoryDays) |
-            Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
+                    Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
             # Dont start update job if other runbooks are running on the hybrid worker group. At the moment one can only get the hybrid worker group something is running on not the idividual worker
             if(-not [bool]($AAjobs.HybridWorker -match $AAworkerGroup.Name))
             {
