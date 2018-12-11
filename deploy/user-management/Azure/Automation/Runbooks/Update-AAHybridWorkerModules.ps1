@@ -1,3 +1,6 @@
+Param(
+[bool]$UpdateAllHybridGoups = $true
+)
 <#
 NAME:       Update-AAHybridWorkerModules
 AUTHOR:     Morten Lerudjordet
@@ -13,10 +16,15 @@ DESCRITPION:
 PREREQUISITES:
             AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
             AAaccountName                   = Name of Azure Automation account
-            AAhybridWorkerGroupName         = Name of Azure Automation hybrid worker group
             AAhybridWorkerAdminCredentials  = Credential object that contains username & password for an account that is local admin on the hybrid worker(s).
                                               If hybrid worker group contains more than one worker, the account must be allowed to do remoting to all the other workers.
+
+.PARAMETER UpdateAllHybridGoups
+            If $true the runbook will try to remote to all hybrid workers in every hybrid group attached to AA account
+            $false will only update the hybrid workers in the same hybrid group the update runbook is running on
+            Default is $true
 #>
+
 #Requires -Version 5.1
 #Requires -Module AzureRM.Profile, AzureRM.Automation
 $VerbosePreference = "continue"
@@ -28,12 +36,11 @@ If($oErr) {
 }
 
 #region Variables
-$RunbookJobHistoryDays = -5
+$RunbookJobHistoryDays = -1
 $RunbookName = "Update-AAHybridWorkerModules"
 $ModuleRepositoryName = "PSGallery"
 $AutomationResourceGroupName = Get-AutomationVariable -Name "AAresourceGroupName" -ErrorAction Stop
 $AutomationAccountName = Get-AutomationVariable -Name "AAaccountName" -ErrorAction Stop
-$AutomationHybridWorkerName = Get-AutomationVariable -Name "AAhybridWorkerGroupName" -ErrorAction Stop
 $AAworkerCredential = Get-AutomationPSCredential -Name "AAhybridWorkerAdminCredentials" -ErrorAction Stop
 
 # Azure Automation Login for Resource Manager
@@ -86,9 +93,11 @@ try {
     $AAInstalledModules = Get-AzureRMAutomationModule -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName |
                             Where-Object {$_.ProvisioningState -eq "Succeeded"}
 
-    # Get names of hybrid workers
-    Write-Verbose -Message "Fetching name of hybrid worker(s)"
-    $AAworkers = (Get-AzureRMAutomationHybridWorkerGroup -Name $AutomationHybridWorkerName -ResourceGroupName $AutomationResourceGroupName -AutomationAccountName $AutomationAccountName -ErrorAction SilentlyContinue -ErrorVariable oErr).RunbookWorker.Name
+    # Get names of hybrid workers in all groups
+    Write-Verbose -Message "Fetching name of all hybrid worker groups"
+    # Get groups but filter out the ones with GUID in them as they are not legitimate groups
+    $AAworkerGroups = (Get-AzureRMAutomationHybridWorkerGroup -ResourceGroupName $AutomationResourceGroupName -AutomationAccountName $AutomationAccountName -ErrorAction SilentlyContinue -ErrorVariable oErr) |
+                    Where-Object -FilterScript {$_.Name -notmatch '\w{8}-\w{4}-\w{4}-\w{4}-\w{12}'}
     if($oErr)
     {
         Write-Error -Message "Failed to fetch hybrid worker(s)" -ErrorAction Stop
@@ -102,6 +111,14 @@ try {
         if($oErr) {
             Write-Error -Message "Failed to load Packagemanagement module." -ErrorAction Stop
         }
+        # Check if PSGallery is trusted, if not make it so
+        $Repository = Get-PSRepository | Where-Object -FilterScript {$_.Name -eq $Using:ModuleRepositoryName}
+        if($Repository.InstallationPolicy -eq "Untrusted")
+        {
+            Set-PSRepository -Name $Using:ModuleRepositoryName -InstallationPolicy Trusted
+            Write-Output -InputObject "Added trust for repositiry: $($Using:ModuleRepositoryName)"
+        }
+
         # Get installed modules
         $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr
         if($oErr) {
@@ -166,6 +183,10 @@ try {
                     Write-Output -InputObject "More than one module was found in search, nothing was installed"
                 }
             }
+            else
+            {
+                Write-Output -InputObject "Module: $MissingModule not found in repository: $($Using:ModuleRepositoryName)"
+            }
         }
         if($newModule)
         {
@@ -179,8 +200,10 @@ try {
 
         ForEach($InstalledModule in $InstalledModules)
         {
-            # Only update modules instelled from gallery
-            if($InstalledModule.Repository -eq $Using:ModuleRepositoryName)
+            # Only update modules installed from PSgallery
+            #Write-Output -InputObject "Module: $($InstalledModule.Name) is from repository: $($InstalledModule.Repository)"
+            # Bug where sometimes repository value is populated with https://www.powershellgallery.com/api/v2/ instead of just PSGallery
+            if(($InstalledModule.Repository -eq $Using:ModuleRepositoryName) -or ($InstalledModule.Repository -eq "https://www.powershellgallery.com/api/v2/"))
             {
                 # Redirecting Verbose stream to Output stream so log can be transfered back
                 $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
@@ -199,7 +222,7 @@ try {
                     else
                     {
                         Write-Output -InputObject "Updating Module: $($InstalledModule.Name)"
-                        # Outputting the whole verbose log
+                        # Streaming verbose log
                         $VerboseLog
                     }
                 }
@@ -220,20 +243,38 @@ try {
     {
         Write-Error -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME)" -ErrorAction Stop
     }
-    Write-Output -InputObject "Runbook is currently running on worker: $(([System.Net.Dns]::GetHostByName(($env:computerName))).HostName)"
-    ForEach($AAworker in $AAworkers)
+    $CurrentWorker = ([System.Net.Dns]::GetHostByName(($env:computerName))).HostName
+    $CurrentWorkerGroup = $AAworkerGroups | Where-Object -FilterScript {$_.RunbookWorker.Name -match $CurrentWorker} | Select-Object -Property Name
+
+    Write-Output -InputObject "Runbook is currently running on worker: $CurrentWorker in worker group: $($CurrentWorkerGroup.Name)"
+    ForEach($AAworkerGroup in $AAworkerGroups)
     {
-        $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays($RunbookJobHistoryDays) |
-                    Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
-        Write-Output -InputObject "Invoking module update against worker: $AAworker"
-        # Dont start updte job if other runbooks are still in a running state
-        if(-not [bool]($AAjobs.HybridWorker -match $AAworker))
+        if(($AAworkerGroup.Name -ne $CurrentWorkerGroup) -and (-not $UpdateAllHybridGoups))
         {
-            Invoke-Command -ComputerName $AAworker -Credential $AAworkerCredential -ScriptBlock $ScriptBlock -HideComputerName -ErrorAction Continue -ErrorVariable oErr
-            if($oErr)
+            Write-Output -InputObject "Skipping updating the hybrid worker group: $AAworkerGroup as UpdateAllHybridGoups is set to $UpdateAllHybridGoups"
+        }
+        else
+        {
+            Write-Output -InputObject "Updating hybrid workers in group: $($AAworkerGroup.Name)"
+            $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays($RunbookJobHistoryDays) |
+            Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
+            # Dont start update job if other runbooks are running on the hybrid worker group. At the moment one can only get the hybrid worker group something is running on not the idividual worker
+            if(-not [bool]($AAjobs.HybridWorker -match $AAworkerGroup.Name))
             {
-                Write-Error -Message "Error executing remote command against: $AAworker" -ErrorAction Continue
-                $oErr = $Null
+                ForEach($AAworker in $AAworkerGroup.RunbookWorker.Name)
+                {
+                    Write-Output -InputObject "Invoking module update against worker: $AAworker"
+                    Invoke-Command -ComputerName $AAworker -Credential $AAworkerCredential -ScriptBlock $ScriptBlock -HideComputerName -ErrorAction Continue -ErrorVariable oErr
+                    if($oErr)
+                    {
+                        Write-Error -Message "Error executing remote command against: $AAworker" -ErrorAction Continue
+                        $oErr = $Null
+                    }
+                }
+            }
+            else
+            {
+                Write-Warning -Message "Hybrid worker group: $($AAworkerGroup.Name) has jobs running. Will not run update of modules at this time"
             }
         }
     }
