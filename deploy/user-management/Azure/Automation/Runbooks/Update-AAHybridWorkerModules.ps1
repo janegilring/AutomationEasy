@@ -340,7 +340,7 @@ try {
                     Invoke-Command -ComputerName $AAworker -Credential $AAworkerCredential -ScriptBlock $ScriptBlock -HideComputerName -ErrorAction Continue -ErrorVariable oErr
                     if($oErr)
                     {
-                        Write-Error -Message "Error executing remote command against: $AAworker" -ErrorAction Continue
+                        Write-Error -Message "Error executing remote command against: $AAworker.`n$($oErr.Message)" -ErrorAction Continue
                         $oErr = $Null
                     }
                 }
