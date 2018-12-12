@@ -19,7 +19,7 @@ DESCRITPION:
 
 PREREQUISITES:
             Powershell version 5.1 on hybrid workers
-            Latest AzureRM & AzureRM.Automation module installed on hybrid workers for first time run
+            Latest AzureRM & AzureRM.Automation module installed on hybrid workers for first time run using Install-Module from admin PS command line
             Azure Automation Assets:
                 AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
                 AAaccountName                   = Name of Azure Automation account
@@ -250,6 +250,7 @@ try {
                 Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
             }
         }
+
         Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
         Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction SilentlyContinue -ErrorVariable oErr
         if($oErr)
