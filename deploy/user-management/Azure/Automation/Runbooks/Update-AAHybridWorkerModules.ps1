@@ -250,19 +250,21 @@ try {
                 Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
             }
         }
-
-        Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
-        Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction SilentlyContinue -ErrorVariable oErr
-        if($oErr)
-        {
-            Write-Error-Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway." -ErrorAction continue
-        }
         ForEach($InstalledModule in $InstalledModules)
         {
             # Only update modules installed from PSgallery
             #Write-Output -InputObject "Module: $($InstalledModule.Name) is from repository: $($InstalledModule.Repository)"
             if( $InstalledModule.Repository -eq $Using:ModuleRepositoryName )
             {
+                if($InstalledModule.Name -eq "AzureRM.Automation" -or $InstalledModule.Name -eq "AzureRM.profile")
+                {
+                    Write-Output -InputObject "Unloading module: $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME)"
+                    Remove-Module -Name $InstalledModule.Name -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
+                    if($oErr)
+                    {
+                        Write-Output -InputObject "Failed to unload module:  $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway."
+                    }
+                }
                 # Redirecting Verbose stream to Output stream so log can be transfered back
                 $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                 # continue on error
@@ -272,6 +274,19 @@ try {
                     $oErr = $Null
                     if($Using:ForceInstallModule)
                     {
+                        $VerboseLog = Uninstall-Module -Name $InstalledModule.Name -Force -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                        if($oErr)
+                        {
+                            Write-Error -Message "Failed to remove module: $($InstalledModule.Name)" -ErrorAction Continue
+                            $oErr = $Null
+                        }
+                        if($VerboseLog)
+                        {
+                            Write-Output -InputObject "Forcing removal of module: $($InstalledModule.Name)"
+                            # Streaming verbose log
+                            $VerboseLog
+                            $VerboseLog = $Null
+                        }
                         $VerboseLog = Install-Module -Name $InstalledModule.Name -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                         if($oErr)
                         {
@@ -309,7 +324,20 @@ try {
                 $ModuleFound = Find-Module -Name $InstalledModule.Name -Repository $Using:ModuleRepositoryName -ErrorAction SilentlyContinue
                 if($ModuleFound)
                 {
-                    Write-Output -InputObject "Module: $($InstalledModule.Name) installed on older version of PSGet, running new install"
+                    Write-Output -InputObject "Module: $($InstalledModule.Name) installed on older version of PSGet, removing and installing again"
+                    $VerboseLog = Uninstall-Module -Name $InstalledModule.Name -Force -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                    if($oErr)
+                    {
+                        Write-Error -Message "Failed to install module: $($InstalledModule.Name)" -ErrorAction Continue
+                        $oErr = $Null
+                    }
+                    if($VerboseLog)
+                    {
+                        Write-Output -InputObject "Forcing removal of module: $($InstalledModule.Name)"
+                        # Streaming verbose log
+                        $VerboseLog
+                        $VerboseLog = $Null
+                    }
                     $VerboseLog = Install-Module -Name $InstalledModule.Name -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                     if($oErr)
                     {
@@ -334,16 +362,19 @@ try {
 #endregion
 
     #region Logic for running code remote on workers
-    Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
-    Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction SilentlyContinue -ErrorVariable oErr
-    if($oErr)
-    {
-        Write-Warning -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway."
-    }
     $CurrentWorker = ([System.Net.Dns]::GetHostByName(($env:computerName))).HostName
     $CurrentWorkerGroup = $AAworkerGroups | Where-Object -FilterScript {$_.RunbookWorker.Name -match $CurrentWorker} | Select-Object -Property Name
 
     Write-Output -InputObject "Runbook is currently running on worker: $CurrentWorker in worker group: $($CurrentWorkerGroup.Name)"
+
+    Write-Output -InputObject "Unloading AzureRM modules on hybrid worker: $($env:COMPUTERNAME)"
+    $VerbosePreference = "silentlycontinue"
+    Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
+    if($oErr)
+    {
+        Write-Warning -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway."
+    }
+    $VerbosePreference = "continue"
     ForEach($AAworkerGroup in $AAworkerGroups)
     {
         if(($AAworkerGroup.Name -ne $CurrentWorkerGroup) -and (-not $UpdateAllHybridGoups))
