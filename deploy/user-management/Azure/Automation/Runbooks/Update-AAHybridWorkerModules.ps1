@@ -279,7 +279,7 @@ try {
                             }
                             if($VerboseLog)
                             {
-                                Write-Output -InputObject "Installing Module: $($ModuleFound.Name) with version: $($ModuleFound.Version)"
+                                Write-Output -InputObject "Installing Module: $($ModuleFound.Name) with latest version: $($ModuleFound.Version)"
                                 # Outputting the whole verbose log
                                 $VerboseLog
                                 $VerboseLog = $Null
