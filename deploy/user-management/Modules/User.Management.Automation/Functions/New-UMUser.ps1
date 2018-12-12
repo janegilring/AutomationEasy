@@ -76,6 +76,7 @@
                     $Parameters.Add('Credential', $ActiveDirectoryCredential)
                     $Parameters.Add('Enabled', $true)
                     $Parameters.Add('Passthru', $true)
+                    $Parameters.Add('ErrorAction', $true)
 
                     $OtherAttributes = @{}
 
@@ -220,11 +221,7 @@
                         $global:WorkflowStatus = 'Completed'
                         $global:Status = "User creation failed - aborting. Error message: $($_.Exception.Message)"
 
-                        if (Get-Command -Name Write-Log -ErrorAction SilentlyContinue) {
-
                             Write-Log -LogEntry $Status -LogType Error
-
-                        }
 
                     }
 
