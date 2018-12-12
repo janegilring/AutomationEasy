@@ -1,12 +1,15 @@
-﻿# What is Azure Automation?
+﻿<!-- markdownlint-disable MD026 -->
 
+# What is Azure Automation?
+
+<!-- markdownlint-enable MD026 -->
 Azure Automation *Process Automation* can be leveraged to orhestrate and administer processes in an IT infrastructure.
 
 Examples of usage areas:
 
 - Automate **maintenance tasks** such as patching a failover cluster or start and stop servers in a specific order when performing planned maintenance.
 - Automate **business processes** such as user on- and offboarding, resetting passwords and automated file transfers.
-* Automate **service catalog and change request tasks** such as creation of virtual machines and configuration of backup and monitoring.
+- Automate **service catalog and change request tasks** such as creation of virtual machines and configuration of backup and monitoring.
 - **Dynamic resource allocation** based on load, for example based on a schedule. One example might be expanding a web frontend farm with more resources before the Christmas holiday season begins.
 - Respond to **alarms from monitoring systems** such as Azure Log Analytics and perform automated actions, such as scaling out a server farm based on high resource utilization.
 - **Integrations across different systems** such as interacting with an API to perform an action.
@@ -37,7 +40,6 @@ The sandbox VM can not be attached to a Virtual Network or connected to VPN or a
 When there is a need to invoke runbooks against resources on-premises, there is a feature called Hybrid Runbook Workers available:
 
 ![mkdocs](../../img/hybridworker.png)
-
 *Image credit: Microsoft*
 
 - Invoke runbooks against local networks (without any need for VPN connectivity to Azure)
@@ -45,7 +47,6 @@ When there is a need to invoke runbooks against resources on-premises, there is 
 - After setting up a Hybrid Worker, there is an option to choose where to start a runbook - "Azure" or "Hybrid Worker Group"
 
 In order to have a redundant setup, it is possible to configure 2 or more servers in the same Hybrid Worker Group.
-
 
 ## Azure Log Analytics
 
