@@ -91,6 +91,7 @@ try {
     {
         Write-Error -Message "Private key of login certificate is NOT accessible, check you user certificate store if the private key is missing or damaged" -ErrorAction Stop
     }
+<#
     $Null = Add-AzureRmAccount `
     -ServicePrincipal `
     -TenantId $AzureConnection.TenantId `
@@ -104,15 +105,16 @@ try {
     {
         Write-Error -Message "Failed to select Azure subscription." -ErrorAction Stop
     }
-<#
-    Login-AzureRmAccount -ServicePrincipal -ApplicationId $AzureConnection.ApplicationId `
+#>
+
+    $Null = Login-AzureRmAccount -ServicePrincipal -ApplicationId $AzureConnection.ApplicationId `
     -CertificateThumbprint $AzureConnection.CertificateThumbprint -TenantId $AzureConnection.TenantId `
     -SubscriptionId $AzureConnection.SubscriptionId -ErrorAction Continue -ErrorVariable oErr
     if($oErr)
     {
         Write-Error -Message "Failed to login to Azure" -ErrorAction Stop
     }
-#>
+
 #endregion
 
 #region Get data from AA
