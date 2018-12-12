@@ -9,7 +9,7 @@ Hence, a backup of the worker servers might not be needed. However, if there is 
 
 Typical measurements such as CPU, memory and disk usage is recommended for the worker servers.
 
-In addition, it is recommended to configure monitoring of failed runbook jobs. The procedure to configure this is available in the article [Forward job status and job streams from Automation to Log Analytics}(https://docs.microsoft.com/en-us/azure/automation/automation-manage-send-joblogs-log-analytics).
+In addition, it is recommended to configure monitoring of failed runbook jobs. The procedure to configure this is available in the article [Forward job status and job streams from Automation to Log Analytics](https://docs.microsoft.com/en-us/azure/automation/automation-manage-send-joblogs-log-analytics).
 
 # Source control
 
