@@ -12,6 +12,7 @@ EMAIL:      morten.lerudjordet@rewired.no
 DESCRITPION:
             This runbook will check installed modules in AA account and attempt to download these from PSGallery to the hybrid workers
             It will also update independend modules installed from PSGallery to latest version (using Install-Module).
+            The logic will not clean out older versions of modules.
 
             Note:
                 All manually uploaded (not imported from PSGallery) modules to AA will not be handled by this runbooks, and should be handled by other means
@@ -24,7 +25,7 @@ PREREQUISITES:
                 AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
                 AAaccountName                   = Name of Azure Automation account
                 AAhybridWorkerAdminCredentials  = Credential object that contains username & password for an account that is local admin on the hybrid worker(s).
-                                                If hybrid worker group contains more than one worker, the account must be allowed to do remoting to all the other workers.
+                                                  If hybrid worker group contains more than one worker, the account must be allowed to do remoting to all workers.
 
 .PARAMETER UpdateAllHybridGoups
             If $true the runbook will try to remote to all hybrid workers in every hybrid group attached to AA account
@@ -32,7 +33,7 @@ PREREQUISITES:
             Default is $true
 
 .PARAMETER ForceReinstallofModule
-            If $true the runbook will try to force a install-module if update-module fails
+            If $true the runbook will try to force a uninstall-module and install-module if update-module fails
             $false will not try to force reinstall of module
             Default is $false
 #>
@@ -202,11 +203,11 @@ try {
 
             if($ModuleFound)
             {
-                #TODO: Better handling if multiple modules are returned from search
+#TODO: Better handling if multiple modules are returned from search
                 if(($ModuleFound.GetTYpe()).BaseType.Name -eq "Object")
                 {
                     Write-Output -InputObject "Module: $($ModuleFound.Name) found in repository: $($Using:ModuleRepositoryName) and will be installed on worker"
-                    # TODO: Option to remove older module versions
+# TODO: Option to remove older module versions
                     # Check if module is already installed / can also be used to find older versions and cleanup
                     if((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
                     {
@@ -256,15 +257,21 @@ try {
             #Write-Output -InputObject "Module: $($InstalledModule.Name) is from repository: $($InstalledModule.Repository)"
             if( $InstalledModule.Repository -eq $Using:ModuleRepositoryName )
             {
-                if($InstalledModule.Name -eq "AzureRM.Automation" -or $InstalledModule.Name -eq "AzureRM.profile")
+                # Will try to unload module from session so update can be done
+                if((Get-Module -Name $InstalledModule.Name -ListAvailable) -ne $Null)
                 {
                     Write-Output -InputObject "Unloading module: $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME)"
                     Remove-Module -Name $InstalledModule.Name -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
                     if($oErr)
                     {
-                        Write-Output -InputObject "Failed to unload module:  $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway."
+                        if($oErr -notlike "*No modules were removed*")
+                        {
+                            Write-Error -Message "Failed to unload module: $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway." -ErrorAction Continue
+                        }
+                        $oErr = $Null
                     }
                 }
+
                 # Redirecting Verbose stream to Output stream so log can be transfered back
                 $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                 # continue on error
@@ -361,20 +368,13 @@ try {
     }
 #endregion
 
-    #region Logic for running code remote on workers
+#region Logic for running code remote on workers
     $CurrentWorker = ([System.Net.Dns]::GetHostByName(($env:computerName))).HostName
     $CurrentWorkerGroup = $AAworkerGroups | Where-Object -FilterScript {$_.RunbookWorker.Name -match $CurrentWorker} | Select-Object -Property Name
 
     Write-Output -InputObject "Runbook is currently running on worker: $CurrentWorker in worker group: $($CurrentWorkerGroup.Name)"
-
-    Write-Output -InputObject "Unloading AzureRM modules on hybrid worker: $($env:COMPUTERNAME)"
+    # Remove logging noise of removal and adding modules to session
     $VerbosePreference = "silentlycontinue"
-    Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
-    if($oErr)
-    {
-        Write-Warning -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway."
-    }
-    $VerbosePreference = "continue"
     ForEach($AAworkerGroup in $AAworkerGroups)
     {
         if(($AAworkerGroup.Name -ne $CurrentWorkerGroup) -and (-not $UpdateAllHybridGoups))
@@ -386,6 +386,17 @@ try {
             Write-Output -InputObject "Updating hybrid workers in group: $($AAworkerGroup.Name)"
             $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays($RunbookJobHistoryDays) |
                     Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
+
+
+            Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
+            if($oErr)
+            {
+                if($oErr -notlike "*No modules were removed*")
+                {
+                    Write-Warning -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME)"
+                }
+                $oErr = $Null
+            }
             # Dont start update job if other runbooks are running on the hybrid worker group. At the moment one can only get the hybrid worker group something is running on not the idividual worker
             if(-not [bool]($AAjobs.HybridWorker -match $AAworkerGroup.Name))
             {
@@ -395,7 +406,7 @@ try {
                     Invoke-Command -ComputerName $AAworker -Credential $AAworkerCredential -ScriptBlock $ScriptBlock -HideComputerName -ErrorAction Continue -ErrorVariable oErr
                     if($oErr)
                     {
-                        Write-Error -Message "Error executing remote command against: $AAworker.`n$($oErr.Message)" -ErrorAction Continue
+                        Write-Error -Message "Error executing remote command against: $AAworker.`n$oErr" -ErrorAction Continue
                         $oErr = $Null
                     }
                 }
