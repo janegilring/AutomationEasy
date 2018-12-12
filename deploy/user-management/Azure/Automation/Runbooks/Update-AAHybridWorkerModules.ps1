@@ -255,7 +255,7 @@ try {
         Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction SilentlyContinue -ErrorVariable oErr
         if($oErr)
         {
-            Write-Warning -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway."
+            Write-Error-Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway." -ErrorAction continue
         }
         ForEach($InstalledModule in $InstalledModules)
         {
@@ -333,7 +333,13 @@ try {
     }
 #endregion
 
-#region Logic for running code remote on workers
+    #region Logic for running code remote on workers
+    Write-Verbose -Message "Unloading modules on hybrid worker: $($env:COMPUTERNAME)"
+    Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -ErrorAction SilentlyContinue -ErrorVariable oErr
+    if($oErr)
+    {
+        Write-Warning -Message "Failed to unload modules on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway."
+    }
     $CurrentWorker = ([System.Net.Dns]::GetHostByName(($env:computerName))).HostName
     $CurrentWorkerGroup = $AAworkerGroups | Where-Object -FilterScript {$_.RunbookWorker.Name -match $CurrentWorker} | Select-Object -Property Name
 
