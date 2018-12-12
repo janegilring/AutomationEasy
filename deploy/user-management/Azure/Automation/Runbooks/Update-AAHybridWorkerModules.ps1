@@ -4,7 +4,10 @@ Param(
 [bool]$UpdateAllHybridGoups = $true,
 [bool]$ForceInstallModule = $false,
 [bool]$UpdateToNewestModule = $false,
-[bool]$SyncOnly = $false
+[bool]$SyncOnly = $false,
+[bool]$UpdateOnly = $false,
+[String]$ModuleRepositoryName = "PSGallery",
+[String]$ModuleSourceLocation = ""
 )
 <#
 NAME:       Update-AAHybridWorkerModules
@@ -47,7 +50,19 @@ PREREQUISITES:
 .PARAMETER SyncOnly
             If $true the runbook will only install the modules and version found in Azure Automation
             $false will keep all modules on hybrid worker up to date with the latest found in the repository
-            Default is $false           
+            Default is $false
+
+.PARAMETER UpdateOnly
+            If $true the runbook will only update already installed modules on the hybrid worker
+            $false will query AA for modules installed there and add the onces missing on the worker
+            Default is $false
+            
+.PARAMETER ModuleRepositoryName
+            Name of repository to use
+            Default is PSGallery
+
+.PARAMETER ModuleSourceLocation
+            URL of repository location
 #>
 try {
     # just incase Requires does not work
@@ -75,7 +90,6 @@ try {
 
     # Local variables
     $RunbookName = "Update-AAHybridWorkerModules"
-    $ModuleRepositoryName = "PSGallery"
     $RunbookJobHistoryDays = -1
 #endregion
 
@@ -163,11 +177,21 @@ try {
         {
             Write-Error -Message "Failed to get repository information" -ErrorAction Stop
         }
-
-        if($Repository.InstallationPolicy -eq "Untrusted")
+        if($Repository)
         {
-            Set-PSRepository -Name $Using:ModuleRepositoryName -InstallationPolicy Trusted
-            Write-Output -InputObject "Added trust for repositiry: $($Using:ModuleRepositoryName)"
+            if($Repository.InstallationPolicy -eq "Untrusted")
+            {
+                Set-PSRepository -Name $Using:ModuleRepositoryName -InstallationPolicy Trusted
+                Write-Output -InputObject "Added trust for repositiry: $($Using:ModuleRepositoryName)"
+            }
+        }
+        else
+        {
+            if($Using:ModuleSourceLocation)
+            {
+                Register-PSRepository -Name $Using:ModuleRepositoryName -SourceLocation $Using:ModuleSourceLocation -PublishLocation $Using:ModuleSourceLocation -InstallationPolicy 'Trusted'
+                Write-Output -InputObject "Added repositiry: $($Using:ModuleRepositoryName) from location: $($Using:ModuleSourceLocation)"
+            }
         }
 
         Write-Output -InputObject "Forcing install of PowerShellGet from $($Using:ModuleRepositoryName)"
@@ -186,136 +210,140 @@ try {
             $VerboseLog = $Null
         }
 #endregion
-#region Compare AA modules with modules installed on worker and install from repository if version found
+
         # Get installed modules
         $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr
         if($oErr)
         {
             Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
         }
-
-        # Find missing modules on hybrid worker
-        $MissingModules = Compare-Object -ReferenceObject $Using:AAInstalledModules -DifferenceObject $InstalledModules -Property Name -PassThru |
-            Where-Object {$_.SideIndicator -eq "<="} | Select-Object -Property Name,Version
-
-        # Add missing modules from Gallery
-        ForEach($MissingModule in $MissingModules)
+        if(-not $Using:UpdateOnly)
         {
-            Write-Output -InputObject "Module: $($MissingModule.Name) is missing on hybrid worker"
-            # Not optimized for speed
-            # Check if it is a PSGallery module
-            try
-            {
-                # ErrorVariable does not get populated, try/catch is a workaround to get at the error, if more module are returned only select with excact same name
-                $ModuleFound = Find-Module -Name $MissingModule.Name -AllVersions -Repository $Using:ModuleRepositoryName -ErrorAction Stop |
-                        Where-Object -FilterScript {$_.Name -eq $MissingModule.Name}
-            }
-            catch
-            {
-                if($_.CategoryInfo.Category -eq "ObjectNotFound")
-                {
-                    Write-Output -InputObjec "No match found for module name: $($MissingModule.Name) in $($Using:ModuleRepositoryName)"
-                }
-                else
-                {
-                    Write-Error -Message "Failed to serach for module" -ErrorAction Continue
-                }
-            }
+#region Compare AA modules with modules installed on worker and install from repository if version found        
+            # Find missing modules on hybrid worker
+            $MissingModules = Compare-Object -ReferenceObject $Using:AAInstalledModules -DifferenceObject $InstalledModules -Property Name -PassThru |
+                Where-Object {$_.SideIndicator -eq "<="} | Select-Object -Property Name,Version
 
-            if($ModuleFound)
+            # Add missing modules from Gallery
+            ForEach($MissingModule in $MissingModules)
             {
-#TODO: Better handling if multiple modules are returned from search
-                # Check to see if the same version is available in repository, then install this version even if it is not the newest
-                if($ModuleFound.Version -match $MissingModule.Version)
+                Write-Output -InputObject "Module: $($MissingModule.Name) is missing on hybrid worker"
+                # Not optimized for speed
+                # Check if it is a PSGallery module
+                try
                 {
-                    # Get the correct version to install
-                    $ModuleFound = $ModuleFound | Where-Object -FilterScript {$_.Version -match $MissingModule.Version}
-                    if(($ModuleFound.GetTYpe()).BaseType.Name -eq "Object")
+                    # ErrorVariable does not get populated, try/catch is a workaround to get at the error, if more module are returned only select with excact same name
+                    $ModuleFound = Find-Module -Name $MissingModule.Name -AllVersions -Repository $Using:ModuleRepositoryName -ErrorAction Stop |
+                            Where-Object -FilterScript {$_.Name -eq $MissingModule.Name}
+                }
+                catch
+                {
+                    if($_.CategoryInfo.Category -eq "ObjectNotFound")
                     {
-                        Write-Output -InputObject "Module: $($ModuleFound.Name) with correct version: $($ModuleFound.Version) found in repository: $($Using:ModuleRepositoryName) and will be installed on worker"
-# TODO: Option to remove older module versions
-                        # Check if module is already installed / can also be used to find older versions and cleanup
-                        if((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
+                        Write-Output -InputObjec "No match found for module name: $($MissingModule.Name) in $($Using:ModuleRepositoryName)"
+                    }
+                    else
+                    {
+                        Write-Error -Message "Failed to serach for module" -ErrorAction Continue
+                    }
+                }
+
+                if($ModuleFound)
+                {
+    #TODO: Better handling if multiple modules are returned from search
+                    # Check to see if the same version is available in repository, then install this version even if it is not the newest
+                    if($ModuleFound.Version -match $MissingModule.Version)
+                    {
+                        # Get the correct version to install
+                        $ModuleFound = $ModuleFound | Where-Object -FilterScript {$_.Version -match $MissingModule.Version}
+                        if(($ModuleFound.GetTYpe()).BaseType.Name -eq "Object")
                         {
-                            # Install-Module will by default install dependecies according to documentation
-                            $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -RequiredVersion $ModuleFound.Version -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
-                            if($oErr)
+                            Write-Output -InputObject "Module: $($ModuleFound.Name) with correct version: $($ModuleFound.Version) found in repository: $($Using:ModuleRepositoryName) and will be installed on worker"
+    # TODO: Option to remove older module versions
+                            # Check if module is already installed / can also be used to find older versions and cleanup
+                            if((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
                             {
-                                Write-Error -Message "Failed to install module: $($ModuleFound.Name)" -ErrorAction Continue
-                                $oErr = $Null
+                                # Install-Module will by default install dependecies according to documentation
+                                $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -RequiredVersion $ModuleFound.Version -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                                if($oErr)
+                                {
+                                    Write-Error -Message "Failed to install module: $($ModuleFound.Name)" -ErrorAction Continue
+                                    $oErr = $Null
+                                }
+                                else
+                                {
+                                    # New module added
+                                    $newModule = $true
+                                }
+                                if($VerboseLog)
+                                {
+                                    Write-Output -InputObject "Installing Module: $($ModuleFound.Name) with version: $($ModuleFound.Version)"
+                                    # Outputting the whole verbose log
+                                    $VerboseLog
+                                    $VerboseLog = $Null
+                                }
                             }
-                            else
-                            {
-                                # New module added
-                                $newModule = $true
-                            }
-                            if($VerboseLog)
-                            {
-                                Write-Output -InputObject "Installing Module: $($ModuleFound.Name) with version: $($ModuleFound.Version)"
-                                # Outputting the whole verbose log
-                                $VerboseLog
-                                $VerboseLog = $Null
-                            }
+                        }
+                        else
+                        {
+                            Write-Output -InputObject "More than one module was found in search, nothing was installed"
                         }
                     }
                     else
                     {
-                        Write-Output -InputObject "More than one module was found in search, nothing was installed"
+                        # Update to newest module version if the module version installed in AA is no longer available in repository
+                        if($Using:UpdateToNewestModule)
+                        {
+                            # Use latest version
+                            $ModuleFound = $ModuleFound[0]
+                            # Check if module is already installed / can also be used to find older versions and cleanup
+                            if((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
+                            {
+                                # Install-Module will by default install dependecies according to documentation
+                                $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                                if($oErr)
+                                {
+                                    Write-Error -Message "Failed to install module: $($ModuleFound.Name)" -ErrorAction Continue
+                                    $oErr = $Null
+                                }
+                                else
+                                {
+                                    # New module added
+                                    $newModule = $true
+                                }
+                                if($VerboseLog)
+                                {
+                                    Write-Output -InputObject "Installing Module: $($ModuleFound.Name) with latest version: $($ModuleFound.Version)"
+                                    # Outputting the whole verbose log
+                                    $VerboseLog
+                                    $VerboseLog = $Null
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Write-Error -Message "Could not find version: $($MissingModule.Version) of module: $($MissingModule.Name) in $($Using:ModuleRepositoryName)." -ErrorAction Continue
+                            Write-Output -InputObject "Set UpdateToNewestModule to true to install newest version of module: $($MissingModule.Name), or update version of module in Azure Automation"
+                        }
                     }
                 }
                 else
                 {
-                    # Update to newest module version if the module version installed in AA is no longer available in repository
-                    if($Using:UpdateToNewestModule)
-                    {
-                        # Use latest version
-                        $ModuleFound = $ModuleFound[0]
-                        # Check if module is already installed / can also be used to find older versions and cleanup
-                        if((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
-                        {
-                            # Install-Module will by default install dependecies according to documentation
-                            $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
-                            if($oErr)
-                            {
-                                Write-Error -Message "Failed to install module: $($ModuleFound.Name)" -ErrorAction Continue
-                                $oErr = $Null
-                            }
-                            else
-                            {
-                                # New module added
-                                $newModule = $true
-                            }
-                            if($VerboseLog)
-                            {
-                                Write-Output -InputObject "Installing Module: $($ModuleFound.Name) with latest version: $($ModuleFound.Version)"
-                                # Outputting the whole verbose log
-                                $VerboseLog
-                                $VerboseLog = $Null
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Write-Error -Message "Could not find version: $($MissingModule.Version) of module: $($MissingModule.Name) in $($Using:ModuleRepositoryName)." -ErrorAction Continue
-                        Write-Output -InputObject "Set UpdateToNewestModule to true to install newest version of module: $($MissingModule.Name), or update version of module in Azure Automation"
-                    }
+                    Write-Output -InputObject "Module: $($MissingModule.Name) with version: $($MissingModule.Version) not found in repository: $($Using:ModuleRepositoryName)"
                 }
             }
-            else
+            if($newModule)
             {
-                Write-Output -InputObject "Module: $($MissingModule.Name) with version: $($MissingModule.Version) not found in repository: $($Using:ModuleRepositoryName)"
+                # Get updated installed modules
+                $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr
+                if($oErr)
+                {
+                    Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
+                }
             }
-        }
-        if($newModule)
-        {
-            # Get updated installed modules
-            $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr
-            if($oErr)
-            {
-                Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
-            }
-        }
 #endregion
+        }
+
 #region Update all modules installed from repository with latest version
         # check if only want to keep the same module version as on AA and not update all modules on worker to latest
         if(-not $Using:SyncOnly)
