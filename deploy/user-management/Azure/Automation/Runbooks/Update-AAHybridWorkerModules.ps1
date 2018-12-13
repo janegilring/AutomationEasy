@@ -69,7 +69,8 @@ PREREQUISITES:
 
 .PARAMETER ModuleSourceLocation
             URL of repository location. Set this parameter with the ModuleRepositoryName = the new repo to add.
-            Running the runbook once will add the new repository to hybrid workers and sets it as trusted
+            Running the runbook once will add the new repository to hybrid workers and sets it as trusted.
+            Then set AllRepositories = $true to make the runbook search all repositories for adding modules from AA or updating them locally
 #>
 try {
     # just incase Requires does not work
@@ -346,8 +347,8 @@ try {
                                 }
                                 else
                                 {
-                                    Write-Error -Message "Could not find version: $($MissingModule.Version) of module: $($MissingModule.Name) in $($Repository.Name)." -ErrorAction Continue
-                                    Write-Output -InputObject "Set UpdateToNewestModule to true to install newest version of module: $($MissingModule.Name), or update version of module in Azure Automation"
+                                    Write-Error -Message "Could not find version: $($MissingModule.Version) of module: $($MissingModule.Name) in $($Repository.Name). Update module in Azure Automation" -ErrorAction Continue
+                                    Write-Output -InputObject "Set UpdateToNewestModule to true to install newest version of module: $($MissingModule.Name).`nOr update version of module in Azure Automation"
                                 }
                             }
                         }
@@ -454,7 +455,7 @@ try {
                         }
                         else
                         {
-                            # Check if modules not on new PSGet logic can be installed anew
+                            # Check if Get-InstalledMoule does not give correct repository formatting. Reinstall module to force correct repository naming
                             $ModuleFound = $Null
                             $ModuleFound = Find-Module -Name $InstalledModule.Name -Repository $Repository.Name -ErrorAction SilentlyContinue
                             if($ModuleFound)
