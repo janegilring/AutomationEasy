@@ -266,7 +266,7 @@ try {
                         {
                             if($_.CategoryInfo.Category -eq "ObjectNotFound")
                             {
-                                Write-Output -InputObjec "No match found for module name: $($MissingModule.Name) in $($Repository.Name)"
+                                Write-Output -InputObject "No match found for module name: $($MissingModule.Name) in $($Repository.Name)"
                             }
                             else
                             {
