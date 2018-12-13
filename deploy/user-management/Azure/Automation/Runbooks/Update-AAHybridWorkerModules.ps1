@@ -47,7 +47,7 @@ PREREQUISITES:
             If $true the runbook will install newest available module version if the version installed in Azure Automation is not available in repository
             $false will not install the module at all on the hybrid worker
             Default is $false
- 
+
 .PARAMETER SyncOnly
             If $true the runbook will only install the modules and version found in Azure Automation
             $false will keep all modules on hybrid worker up to date with the latest found in the repository
@@ -68,7 +68,8 @@ PREREQUISITES:
             Default is PSGallery
 
 .PARAMETER ModuleSourceLocation
-            URL of repository location
+            URL of repository location. Set this parameter with the ModuleRepositoryName = the new repo to add.
+            Running the runbook once will add the new repository to hybrid workers and sets it as trusted
 #>
 try {
     # just incase Requires does not work
@@ -177,7 +178,7 @@ try {
             Write-Error -Message "Failed to load PowerShellGet module." -ErrorAction Continue
         }
 
-        if($Using:AllRepositiries)
+        if($Using:AllRepositories)
         {
             # Check if PSGallery is trusted, if not make it so
             $Repositories = Get-PSRepository -ErrorAction Continue -ErrorVariable oErr
@@ -207,16 +208,16 @@ try {
                 if($Using:ModuleSourceLocation)
                 {
                     Register-PSRepository -Name $Using:ModuleRepositoryName -SourceLocation $Using:ModuleSourceLocation -PublishLocation $Using:ModuleSourceLocation -InstallationPolicy 'Trusted'
-                    Write-Output -InputObject "Added repositiry: $($Using:ModuleRepositoryName) from location: $($Using:ModuleSourceLocation)"
+                    Write-Output -InputObject "Added repositiry: $($Using:ModuleRepositoryName) from location: $($Using:ModuleSourceLocation) to hybrid worker repository"
                 }
-                else 
+                else
                 {
-                    Write-Error -Message "Variable ModuleSourceLocation is missing repository URL" -ErrorAction Stop
+                    Write-Error -Message "Variable ModuleSourceLocation is missing repository URL, can't add new repository to hybrid worker" -ErrorAction Stop
                 }
             }
         }
         Write-Output -InputObject "Forcing install of PowerShellGet from PSGallery"
-
+        # PSGallery as source is hardcoded and not using the ModuleRepositoryName variable
         $VerboseLog = Install-Module -Name PowerShellGet -AllowClobber -Force -Repository PSGallery -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
         if($oErr)
         {
@@ -241,7 +242,7 @@ try {
             }
             if(-not $Using:UpdateOnly)
             {
-#region Compare AA modules with modules installed on worker and install from repository if version found        
+#region Compare AA modules with modules installed on worker and install from repository if version found
                 # Find missing modules on hybrid worker
                 $MissingModules = Compare-Object -ReferenceObject $Using:AAInstalledModules -DifferenceObject $InstalledModules -Property Name -PassThru |
                     Where-Object {$_.SideIndicator -eq "<="} | Select-Object -Property Name,Version
@@ -356,14 +357,14 @@ try {
                         }
                     }
                 }
-                else 
+                else
                 {
-                    Write-Output -InputObject "No modules found missing in repository: $($Repository.Name)"    
+                    Write-Output -InputObject "No modules found missing in repository: $($Repository.Name)"
                 }
                 if($newModule)
                 {
                     # Get updated installed modules
-                    $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr 
+                    $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr
                     if($oErr)
                     {
                         Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
@@ -372,7 +373,7 @@ try {
 #endregion
             }
 
-#region Update all modules installed from repository with latest version
+#region Update all modules installed from repositories with latest version
             # check if only want to keep the same module version as on AA and not update all modules on worker to latest
             if(-not $Using:SyncOnly)
             {
@@ -398,7 +399,7 @@ try {
                                     $oErr = $Null
                                 }
                             }
-            
+
                             # Redirecting Verbose stream to Output stream so log can be transfered back
                             $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                             # continue on error
