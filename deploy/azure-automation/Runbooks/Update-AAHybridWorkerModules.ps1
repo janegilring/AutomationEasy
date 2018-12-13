@@ -27,6 +27,7 @@ DESCRITPION:
 PREREQUISITES:
             Powershell version 5.1 on hybrid workers
             Latest AzureRM & AzureRM.Automation module installed on hybrid workers for first time run using Install-Module from admin PS command line
+            Make sure AzureRM.Profile has repository equal to PSGallery (use Get-InstalledModule) to check, if not use Uninstall-Module and Install-Module
             Azure Automation Assets:
                 AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
                 AAaccountName                   = Name of Azure Automation account
