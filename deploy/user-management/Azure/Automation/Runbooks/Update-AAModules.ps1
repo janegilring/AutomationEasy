@@ -1,37 +1,5 @@
-﻿<#PSScriptInfo
-
-.VERSION 1.03
-
-.GUID fa658952-8f94-45ac-9c94-f5fe23d0fcf9
-
-.AUTHOR Automation Team
-
-.CONTRIBUTOR Morten Lerudjordet,Joel Bennett
-
-.COMPANYNAME Microsoft
-
-.COPYRIGHT
-
-.TAGS AzureAutomation OMS Module Utility
-
-.LICENSEURI
-
-.PROJECTURI https://github.com/azureautomation/runbooks/blob/master/Utility/Update-ModulesInAutomationToLatestVersion.ps1
-
-.ICONURI
-
-.EXTERNALMODULEDEPENDENCIES
-
-.REQUIREDSCRIPTS
-
-.EXTERNALSCRIPTDEPENDENCIES
-
-.RELEASENOTES
-
-#>
-#Requires -Version 5.0
+﻿#Requires -Version 5.0
 #Requires -Module AzureRM.Profile, AzureRM.Automation,AzureRM.Resources
-
 <#
 .SYNOPSIS
     This Azure/OMS Automation runbook imports the latest version on PowerShell Gallery of all modules in an
@@ -64,8 +32,8 @@
     Update-AAModules -ResourceGroupName "MyResourceGroup" -AutomationAccountName "MyAutomationAccount" -NewModuleName "AzureRM.Batch"
 
 .NOTES
-    AUTHOR: Automation Team
-    LASTEDIT: September 2nd, 2016
+    AUTHOR:         Automation Team
+    CONTRIBUTOR:    Morten Lerudjordet,Joel Bennett
 #>
 
 param(
