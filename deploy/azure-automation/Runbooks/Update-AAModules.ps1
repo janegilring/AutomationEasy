@@ -1,6 +1,10 @@
 ﻿#Requires -Version 5.0
 #Requires -Module AzureRM.Profile, AzureRM.Automation,AzureRM.Resources
 <#
+AUTHOR          : Automation Team
+CONTRIBUTOR     : Morten Lerudjordet,Joel Bennett
+Original URL    : https://github.com/azureautomation/runbooks/blob/master/Utility/ARM/Update-ModulesInAutomationToLatestVersion.ps1
+
 .SYNOPSIS
     This Azure/OMS Automation runbook imports the latest version on PowerShell Gallery of all modules in an
     Automation account.If a new module to import is specified, it will import that module from the PowerShell Gallery
@@ -31,9 +35,6 @@
 .EXAMPLE
     Update-AAModules -ResourceGroupName "MyResourceGroup" -AutomationAccountName "MyAutomationAccount" -NewModuleName "AzureRM.Batch"
 
-.NOTES
-    AUTHOR:         Automation Team
-    CONTRIBUTOR:    Morten Lerudjordet,Joel Bennett
 #>
 
 param(
