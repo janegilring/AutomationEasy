@@ -27,6 +27,7 @@ DESCRITPION:
 PREREQUISITES:
             Powershell version 5.1 on hybrid workers
             Latest AzureRM & AzureRM.Automation module installed on hybrid workers for first time run using Install-Module from admin PS command line
+            Make sure AzureRM.Profile has repository equal to PSGallery (use Get-InstalledModule) to check, if not use Uninstall-Module and Install-Module
             Azure Automation Assets:
                 AAresourceGroupName             = Name of resourcegroup Azure Automation resides in
                 AAaccountName                   = Name of Azure Automation account
@@ -45,9 +46,9 @@ PREREQUISITES:
 
 .PARAMETER UpdateToNewestModule
             If $true the runbook will install newest available module version if the version installed in Azure Automation is not available in repository
-            $false will not install the module at all on the hybrid worker
+            $false will not install the module at all on the hybrid worker if the same version as in AA is not available in repository
             Default is $false
- 
+
 .PARAMETER SyncOnly
             If $true the runbook will only install the modules and version found in Azure Automation
             $false will keep all modules on hybrid worker up to date with the latest found in the repository
@@ -68,7 +69,9 @@ PREREQUISITES:
             Default is PSGallery
 
 .PARAMETER ModuleSourceLocation
-            URL of repository location
+            URL of repository location. Set this parameter with the ModuleRepositoryName = the new repo to add.
+            Running the runbook once will add the new repository to hybrid workers and sets it as trusted.
+            Then set AllRepositories = $true to make the runbook search all repositories for adding modules from AA or updating them locally
 #>
 try {
     # just incase Requires does not work
@@ -177,7 +180,7 @@ try {
             Write-Error -Message "Failed to load PowerShellGet module." -ErrorAction Continue
         }
 
-        if($Using:AllRepositiries)
+        if($Using:AllRepositories)
         {
             # Check if PSGallery is trusted, if not make it so
             $Repositories = Get-PSRepository -ErrorAction Continue -ErrorVariable oErr
@@ -207,16 +210,16 @@ try {
                 if($Using:ModuleSourceLocation)
                 {
                     Register-PSRepository -Name $Using:ModuleRepositoryName -SourceLocation $Using:ModuleSourceLocation -PublishLocation $Using:ModuleSourceLocation -InstallationPolicy 'Trusted'
-                    Write-Output -InputObject "Added repositiry: $($Using:ModuleRepositoryName) from location: $($Using:ModuleSourceLocation)"
+                    Write-Output -InputObject "Added repositiry: $($Using:ModuleRepositoryName) from location: $($Using:ModuleSourceLocation) to hybrid worker repository"
                 }
-                else 
+                else
                 {
-                    Write-Error -Message "Variable ModuleSourceLocation is missing repository URL" -ErrorAction Stop
+                    Write-Error -Message "Variable ModuleSourceLocation is missing repository URL, can't add new repository to hybrid worker" -ErrorAction Stop
                 }
             }
         }
         Write-Output -InputObject "Forcing install of PowerShellGet from PSGallery"
-
+        # PSGallery as source is hardcoded and not using the ModuleRepositoryName variable
         $VerboseLog = Install-Module -Name PowerShellGet -AllowClobber -Force -Repository PSGallery -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
         if($oErr)
         {
@@ -241,7 +244,7 @@ try {
             }
             if(-not $Using:UpdateOnly)
             {
-#region Compare AA modules with modules installed on worker and install from repository if version found        
+#region Compare AA modules with modules installed on worker and install from repository if version found
                 # Find missing modules on hybrid worker
                 $MissingModules = Compare-Object -ReferenceObject $Using:AAInstalledModules -DifferenceObject $InstalledModules -Property Name -PassThru |
                     Where-Object {$_.SideIndicator -eq "<="} | Select-Object -Property Name,Version
@@ -263,7 +266,7 @@ try {
                         {
                             if($_.CategoryInfo.Category -eq "ObjectNotFound")
                             {
-                                Write-Output -InputObjec "No match found for module name: $($MissingModule.Name) in $($Repository.Name)"
+                                Write-Output -InputObject "No match found for module name: $($MissingModule.Name) in $($Repository.Name)"
                             }
                             else
                             {
@@ -345,8 +348,8 @@ try {
                                 }
                                 else
                                 {
-                                    Write-Error -Message "Could not find version: $($MissingModule.Version) of module: $($MissingModule.Name) in $($Repository.Name)." -ErrorAction Continue
-                                    Write-Output -InputObject "Set UpdateToNewestModule to true to install newest version of module: $($MissingModule.Name), or update version of module in Azure Automation"
+                                    Write-Error -Message "Could not find version: $($MissingModule.Version) of module: $($MissingModule.Name) in $($Repository.Name). Update module in Azure Automation" -ErrorAction Continue
+                                    Write-Output -InputObject "Set UpdateToNewestModule to true to install newest version of module: $($MissingModule.Name).`nOr update version of module in Azure Automation"
                                 }
                             }
                         }
@@ -356,14 +359,14 @@ try {
                         }
                     }
                 }
-                else 
+                else
                 {
-                    Write-Output -InputObject "No modules found missing in repository: $($Repository.Name)"    
+                    Write-Output -InputObject "No modules found missing in repository: $($Repository.Name)"
                 }
                 if($newModule)
                 {
                     # Get updated installed modules
-                    $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr 
+                    $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr
                     if($oErr)
                     {
                         Write-Error -Message "Failed to retrieve installed modules" -ErrorAction Stop
@@ -372,7 +375,7 @@ try {
 #endregion
             }
 
-#region Update all modules installed from repository with latest version
+#region Update all modules installed from repositories with latest version
             # check if only want to keep the same module version as on AA and not update all modules on worker to latest
             if(-not $Using:SyncOnly)
             {
@@ -398,7 +401,7 @@ try {
                                     $oErr = $Null
                                 }
                             }
-            
+
                             # Redirecting Verbose stream to Output stream so log can be transfered back
                             $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                             # continue on error
@@ -453,7 +456,7 @@ try {
                         }
                         else
                         {
-                            # Check if modules not on new PSGet logic can be installed anew
+                            # Check if Get-InstalledMoule does not give correct repository formatting. Reinstall module to force correct repository naming
                             $ModuleFound = $Null
                             $ModuleFound = Find-Module -Name $InstalledModule.Name -Repository $Repository.Name -ErrorAction SilentlyContinue
                             if($ModuleFound)
@@ -519,7 +522,6 @@ try {
             Write-Output -InputObject "Updating hybrid workers in group: $($AAworkerGroup.Name)"
             $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays($RunbookJobHistoryDays) |
                     Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
-
 
             Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
             if($oErr)
