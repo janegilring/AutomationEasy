@@ -376,97 +376,48 @@ try {
 #endregion
             }
 
-#region Update all modules installed from repositories with latest version
-            # check if only want to keep the same module version as on AA and not update all modules on worker to latest
-            if(-not $Using:SyncOnly)
-            {
-                if($InstalledModules)
-                {
-                    ForEach($InstalledModule in $InstalledModules)
-                    {
-                        # Only update modules installed from given repository
-                        #Write-Output -InputObject "Module: $($InstalledModule.Name) is from repository: $($InstalledModule.Repository)"
-                        if( $InstalledModule.Repository -eq $Repository.Name )
-                        {
-                            # Will try to unload module from session so update can be done
-                            if((Get-Module -Name $InstalledModule.Name -ListAvailable) -ne $Null)
-                            {
-                                Write-Output -InputObject "Unloading module: $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME)"
-                                Remove-Module -Name $InstalledModule.Name -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
-                                if($oErr)
-                                {
-                                    if($oErr -notlike "*No modules were removed*")
-                                    {
-                                        Write-Error -Message "Failed to unload module: $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway." -ErrorAction Continue
-                                    }
-                                    $oErr = $Null
-                                }
-                            }
 
-                            # Redirecting Verbose stream to Output stream so log can be transfered back
-                            $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
-                            # continue on error
+        }
+#region Update all modules installed from repositories with latest version
+        # check if only want to keep the same module version as on AA and not update all modules on worker to latest
+        if(-not $Using:SyncOnly)
+        {
+            if($InstalledModules)
+            {
+                ForEach($InstalledModule in $InstalledModules)
+                {
+                    # Only update modules installed from given repository
+                    #Write-Output -InputObject "Module: $($InstalledModule.Name) is from repository: $($InstalledModule.Repository)"
+                    if( $InstalledModule.Repository -eq $Repository.Name )
+                    {
+                        # Will try to unload module from session so update can be done
+                        if((Get-Module -Name $InstalledModule.Name -ListAvailable) -ne $Null)
+                        {
+                            Write-Output -InputObject "Unloading module: $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME)"
+                            Remove-Module -Name $InstalledModule.Name -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
                             if($oErr)
                             {
-                                Write-Error -Message "Failed to update module: $($InstalledModule.Name)" -ErrorAction Continue
+                                if($oErr -notlike "*No modules were removed*")
+                                {
+                                    Write-Error -Message "Failed to unload module: $($InstalledModule.Name) on hybrid worker: $($env:COMPUTERNAME). Will try to update anyway." -ErrorAction Continue
+                                }
                                 $oErr = $Null
-                                if($Using:ForceInstallModule)
-                                {
-                                    $VerboseLog = Uninstall-Module -Name $InstalledModule.Name -Force -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
-                                    if($oErr)
-                                    {
-                                        Write-Error -Message "Failed to remove module: $($InstalledModule.Name)" -ErrorAction Continue
-                                        $oErr = $Null
-                                    }
-                                    if($VerboseLog)
-                                    {
-                                        Write-Output -InputObject "Forcing removal of module: $($InstalledModule.Name)"
-                                        # Streaming verbose log
-                                        $VerboseLog
-                                        $VerboseLog = $Null
-                                    }
-                                    $VerboseLog = Install-Module -Name $InstalledModule.Name -AllowClobber -Force -Repository $Repository.Name -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
-                                    if($oErr)
-                                    {
-                                        Write-Error -Message "Failed to install module: $($InstalledModule.Name)" -ErrorAction Continue
-                                        $oErr = $Null
-                                    }
-                                    if($VerboseLog)
-                                    {
-                                        Write-Output -InputObject "Forcing install of module: $($InstalledModule.Name) from $($Repository.Name)"
-                                        # Streaming verbose log
-                                        $VerboseLog
-                                        $VerboseLog = $Null
-                                    }
-                                }
-                            }
-                            if($VerboseLog)
-                            {
-                                if($VerboseLog -like "*Skipping installed module*")
-                                {
-                                    Write-Output -InputObject "Module: $($InstalledModule.Name) is up to date running version: $($InstalledModule.Version) repository: $($Repository.Name)"
-                                }
-                                else
-                                {
-                                    Write-Output -InputObject "Updating Module: $($InstalledModule.Name)"
-                                    # Streaming verbose log
-                                    $VerboseLog
-                                    $VerboseLog = $Null
-                                }
                             }
                         }
-                        else
+
+                        # Redirecting Verbose stream to Output stream so log can be transfered back
+                        $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                        # continue on error
+                        if($oErr)
                         {
-                            # Check if Get-InstalledMoule does not give correct repository formatting. Reinstall module to force correct repository naming
-                            $ModuleFound = $Null
-                            $ModuleFound = Find-Module -Name $InstalledModule.Name -Repository $Repository.Name -ErrorAction SilentlyContinue
-                            if($ModuleFound)
+                            Write-Error -Message "Failed to update module: $($InstalledModule.Name)" -ErrorAction Continue
+                            $oErr = $Null
+                            if($Using:ForceInstallModule)
                             {
-                                Write-Output -InputObject "Module: $($InstalledModule.Name) installed on older version of PSGet, removing and installing again"
                                 $VerboseLog = Uninstall-Module -Name $InstalledModule.Name -Force -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                                 if($oErr)
                                 {
-                                    Write-Error -Message "Failed to install module: $($InstalledModule.Name)" -ErrorAction Continue
+                                    Write-Error -Message "Failed to remove module: $($InstalledModule.Name)" -ErrorAction Continue
                                     $oErr = $Null
                                 }
                                 if($VerboseLog)
@@ -490,6 +441,80 @@ try {
                                     $VerboseLog = $Null
                                 }
                             }
+                        }
+                        if($VerboseLog)
+                        {
+                            if($VerboseLog -like "*Skipping installed module*")
+                            {
+                                Write-Output -InputObject "Module: $($InstalledModule.Name) is up to date running version: $($InstalledModule.Version) repository: $($Repository.Name)"
+                            }
+                            else
+                            {
+                                Write-Output -InputObject "Updating Module: $($InstalledModule.Name)"
+                                # Streaming verbose log
+                                $VerboseLog
+                                $VerboseLog = $Null
+                            }
+                        }
+                    }
+                    else
+                    {
+                        # Check if repo name is URL, if try to reinstall module to get supported repo naming convention
+                        if($InstalledModule.Repository -match '(https?://([-\w\.]+)+(:\d+)?(/([\w/_\.]*(\?\S+)?)?)?)')
+                        {
+                            # Check if Get-InstalledMoule does not give correct repository formatting. Reinstall module to force correct repository naming
+                            $ModuleFound = $Null
+                            # If multiple repos are in use find can return multiple modules
+                            $ModuleFound = Find-Module -Name $InstalledModule.Name -Repository $Repositories.Name -ErrorAction SilentlyContinue
+
+                            if($ModuleFound)
+                            {
+#TODO: Better handling of from what repo to install module from if multiple are returned from find
+                                # Check if module is in multiple repos
+                                if(($ModuleFound.GetTYpe()).BaseType.Name -eq "Array")
+                                {
+                                    Write-Output -InputObject "Multiple repositories has module: $($InstalledModule.Name) hosted"
+                                    if($ModuleFound.Repository -match "PSGallery")
+                                    {
+                                        # prefer PSGallery
+                                        $ModuleFound = $ModuleFound | Where-Object -FilterScript {$_.Repository -like "*PSGallery*"}
+                                        Write-Output -InputObject "Module: $($InstalledModule.Name) found in multiple trusted repositories. Installing from $($ModuleFound.Repository)"
+                                    }
+                                    else
+                                    {
+                                        # Use the repo with the highest version number
+                                        $ModuleFound = $ModuleFound | Sort-Object -Descending -Property Version | Select-Object -First 1
+                                        Write-Output -InputObject "Module: $($InstalledModule.Name) found in multiple trusted repositories. Installing from $($ModuleFound.Repository)"
+                                    }
+                                }
+                                Write-Output -InputObject "Local module: $($InstalledModule.Name) has URL for repository name, reinstalling to fix"
+                                $VerboseLog = Uninstall-Module -Name $ModuleFound.Name -Force -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                                if($oErr)
+                                {
+                                    Write-Error -Message "Failed to install module: $($ModuleFound.Name)" -ErrorAction Continue
+                                    $oErr = $Null
+                                }
+                                if($VerboseLog)
+                                {
+                                    Write-Output -InputObject "Forcing removal of module: $($ModuleFound.Name)"
+                                    # Streaming verbose log
+                                    $VerboseLog
+                                    $VerboseLog = $Null
+                                }
+                                $VerboseLog = Install-Module -Name $ModuleFound.Name -Force -Repository $ModuleFound.Repository -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+                                if($oErr)
+                                {
+                                    Write-Error -Message "Failed to install module: $($ModuleFound.Name)" -ErrorAction Continue
+                                    $oErr = $Null
+                                }
+                                if($VerboseLog)
+                                {
+                                    Write-Output -InputObject "Forcing install of module: $($ModuleFound.Name) from $($ModuleFound.Repository)"
+                                    # Streaming verbose log
+                                    $VerboseLog
+                                    $VerboseLog = $Null
+                                }
+                            }
                             else
                             {
                                 Write-Output -InputObject "Module: $($InstalledModule.Name) is not in $($Repository.Name), therefore will not autoupdate"
@@ -497,10 +522,9 @@ try {
                         }
                     }
                 }
-
             }
-#endregion
         }
+#endregion
 
     }
 #endregion
