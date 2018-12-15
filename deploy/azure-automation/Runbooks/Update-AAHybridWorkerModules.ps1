@@ -236,6 +236,7 @@ try {
 #endregion
         ForEach($Repository in $Repositories)
         {
+            Write-Output -InputObject "Using repository: $($Repository.Name)"
             # Get installed modules
             $InstalledModules = Get-InstalledModule -ErrorAction Continue -ErrorVariable oErr
             if($oErr)
@@ -443,7 +444,7 @@ try {
                             {
                                 if($VerboseLog -like "*Skipping installed module*")
                                 {
-                                    Write-Output -InputObject "Module: $($InstalledModule.Name) is up to date running version: $($InstalledModule.Version)"
+                                    Write-Output -InputObject "Module: $($InstalledModule.Name) is up to date running version: $($InstalledModule.Version) repository: $($Repository.Name)"
                                 }
                                 else
                                 {
