@@ -18,6 +18,8 @@ Full documentation is available [here](https://automationeasy.blob.core.windows.
 
 Automation Easy leverages [Plaster](https://github.com/PowerShell/Plaster) - a template-based file and project generator written in PowerShell - for deploying solution templates.
 
+![Plaster demo](docs/img/plaster_demo.gif)
+
 If you have the [PowerShellGet](https://docs.microsoft.com/en-us/powershell/gallery/overview#powershellget-overviewadme) module installed (installed by default in Windows 10)
 you can enter the following command:
 

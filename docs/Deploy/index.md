@@ -6,6 +6,8 @@ We have built possibility to deploy the files using [Plaster](https://github.com
 
 after which Plaster will ask for information that needs to be changed in each deployment.
 
+![mkdocs](../img/plaster_demo.gif)
+
 ## Plaster parameters
 
 ### FeatureSelect
