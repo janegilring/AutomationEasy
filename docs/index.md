@@ -11,7 +11,7 @@ In such scenarios, the solution is creating a starting point which can be built 
 
 Automation Easy leverages [Plaster](https://github.com/PowerShell/Plaster) - a template-based file and project generator written in PowerShell - for deploying solution templates.
 
-![mkdocs](/img/plaster_demo.gif)
+![mkdocs](img/plaster_demo.gif)
 
 If you have the [PowerShellGet](https://docs.microsoft.com/en-us/powershell/gallery/overview#powershellget-overviewadme) module installed (installed by default in Windows 10)
 you can enter the following command:
