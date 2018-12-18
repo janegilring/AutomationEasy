@@ -107,6 +107,10 @@ try
     # Local variables
     $RunbookName = "Update-AAHybridWorkerModules"
     $RunbookJobHistoryDays = -1
+
+    # Global variables
+    $Global:InstalledModulesCount = 0
+    $Global:UpdatedModulesCount = 0
     #endregion
 
     $VerbosePreference = "continue"
@@ -134,7 +138,7 @@ try
         Write-Error -Message "Private key of login certificate is NOT accessible, check you user certificate store if the private key is missing or damaged" -ErrorAction Stop
     }
     # Below authentication will lock AzureRM.profile from updating
-    <#
+<#
     $Null = Add-AzureRmAccount `
     -ServicePrincipal `
     -TenantId $AzureConnection.TenantId `
@@ -325,6 +329,8 @@ try
                                         # Outputting the whole verbose log
                                         $VerboseLog
                                         $VerboseLog = $Null
+                                        # Count number of modules installed
+                                        $Global:InstalledModulesCount++
                                     }
                                 }
                             }
@@ -361,6 +367,8 @@ try
                                         # Outputting the whole verbose log
                                         $VerboseLog
                                         $VerboseLog = $Null
+                                        # Number of modules updated
+                                        $Global:UpdatedModulesCount++
                                     }
                                 }
                             }
@@ -453,6 +461,8 @@ try
                                     # Streaming verbose log
                                     $VerboseLog
                                     $VerboseLog = $Null
+                                    # Number of modules updated
+                                    $Global:UpdatedModulesCount++
                                 }
                             }
                         }
@@ -468,6 +478,8 @@ try
                                 # Streaming verbose log
                                 $VerboseLog
                                 $VerboseLog = $Null
+                                # Number of modules updated
+                                $Global:UpdatedModulesCount++
                             }
                         }
                     }
@@ -527,6 +539,8 @@ try
                                     # Streaming verbose log
                                     $VerboseLog
                                     $VerboseLog = $Null
+                                    # Number of modules updated
+                                    $Global:UpdatedModulesCount++
                                 }
                             }
                             else
@@ -606,5 +620,7 @@ catch
 }
 finally
 {
+    Write-Output -InputObject "Number of modules synced from AA: $InstalledModulesCount"
+    Write-Output -InputObject "Number of modules updated: $UpdatedModulesCount"
     Write-Output -InputObject "Runbook ended at time: $(get-Date -format r)"
 }
