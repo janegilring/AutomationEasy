@@ -1,5 +1,6 @@
 #Requires -Version 5.1
 #Requires -Module AzureRM.Profile, AzureRM.Automation
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification="By design - used for counting installed / updated modules on all remoted workers")]
 Param(
     [bool]$UpdateAllHybridGoups = $true,
     [bool]$ForceInstallModule = $false,
@@ -24,6 +25,10 @@ DESCRITPION:
             Note:
                 All manually uploaded (not available through repositories configurable through Register-PSRepository) modules to AA will not be handled by this Runbooks, and should be handled by other means
                 Run Get-InstalledModule in PS command window (not in ISE) to check that Repository variable is set to a configured and trusted repository
+
+            Warning:
+                The runbook will automatically set PSGallery as a trusted repository on all workers on first run.
+                It is strongly recommended to set up a private repository to use for production.
 
 PREREQUISITES:
             Powershell version 5.1 on hybrid workers
@@ -103,6 +108,10 @@ try
     # Local variables
     $RunbookName = "Update-AAHybridWorkerModules"
     $RunbookJobHistoryDays = -1
+
+    # Global variables
+    $Global:InstalledModulesCount = 0
+    $Global:UpdatedModulesCount = 0
     #endregion
 
     $VerbosePreference = "continue"
@@ -130,7 +139,7 @@ try
         Write-Error -Message "Private key of login certificate is NOT accessible, check you user certificate store if the private key is missing or damaged" -ErrorAction Stop
     }
     # Below authentication will lock AzureRM.profile from updating
-    <#
+<#
     $Null = Add-AzureRmAccount `
     -ServicePrincipal `
     -TenantId $AzureConnection.TenantId `
@@ -321,6 +330,8 @@ try
                                         # Outputting the whole verbose log
                                         $VerboseLog
                                         $VerboseLog = $Null
+                                        # Count number of modules installed
+                                        $Global:InstalledModulesCount++
                                     }
                                 }
                             }
@@ -357,6 +368,8 @@ try
                                         # Outputting the whole verbose log
                                         $VerboseLog
                                         $VerboseLog = $Null
+                                        # Number of modules updated
+                                        $Global:UpdatedModulesCount++
                                     }
                                 }
                             }
@@ -449,6 +462,8 @@ try
                                     # Streaming verbose log
                                     $VerboseLog
                                     $VerboseLog = $Null
+                                    # Number of modules updated
+                                    $Global:UpdatedModulesCount++
                                 }
                             }
                         }
@@ -464,6 +479,8 @@ try
                                 # Streaming verbose log
                                 $VerboseLog
                                 $VerboseLog = $Null
+                                # Number of modules updated
+                                $Global:UpdatedModulesCount++
                             }
                         }
                     }
@@ -523,6 +540,8 @@ try
                                     # Streaming verbose log
                                     $VerboseLog
                                     $VerboseLog = $Null
+                                    # Number of modules updated
+                                    $Global:UpdatedModulesCount++
                                 }
                             }
                             else
@@ -578,6 +597,11 @@ try
                         Write-Error -Message "Error executing remote command against: $AAworker.`n$oErr" -ErrorAction Continue
                         $oErr = $Null
                     }
+                    Write-Output -InputObject "$InstalledModulesCount module(s) synced from AA on worker: $AAworker"
+                    Write-Output -InputObject "$UpdatedModulesCount module(s) updated on worker: $AAworker"
+                    # Reset for next worker
+                    $Global:InstalledModulesCount = 0
+                    $Global:UpdatedModulesCount = 0
                 }
             }
             else
