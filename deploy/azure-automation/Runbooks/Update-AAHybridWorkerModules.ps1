@@ -25,6 +25,10 @@ DESCRITPION:
                 All manually uploaded (not available through repositories configurable through Register-PSRepository) modules to AA will not be handled by this Runbooks, and should be handled by other means
                 Run Get-InstalledModule in PS command window (not in ISE) to check that Repository variable is set to a configured and trusted repository
 
+            Warning:
+                The runbook will automatically set PSGallery as a trusted repository on all workers on first run.
+                It is strongly recommended to set up a private repository to use for production.
+
 PREREQUISITES:
             Powershell version 5.1 on hybrid workers
             Latest AzureRM & AzureRM.Automation module installed on hybrid workers for first time run using Install-Module from admin PS command line
