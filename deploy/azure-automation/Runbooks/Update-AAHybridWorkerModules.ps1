@@ -1,5 +1,6 @@
 #Requires -Version 5.1
 #Requires -Module AzureRM.Profile, AzureRM.Automation
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification="By design - used for counting installed / updated modules on all remoted workers")]
 Param(
     [bool]$UpdateAllHybridGoups = $true,
     [bool]$ForceInstallModule = $false,
@@ -596,6 +597,11 @@ try
                         Write-Error -Message "Error executing remote command against: $AAworker.`n$oErr" -ErrorAction Continue
                         $oErr = $Null
                     }
+                    Write-Output -InputObject "$InstalledModulesCount module(s) synced from AA on worker: $AAworker"
+                    Write-Output -InputObject "$UpdatedModulesCount module(s) updated on worker: $AAworker"
+                    # Reset for next worker
+                    $Global:InstalledModulesCount = 0
+                    $Global:UpdatedModulesCount = 0
                 }
             }
             else
@@ -620,7 +626,5 @@ catch
 }
 finally
 {
-    Write-Output -InputObject "Number of modules synced from AA: $InstalledModulesCount"
-    Write-Output -InputObject "Number of modules updated: $UpdatedModulesCount"
     Write-Output -InputObject "Runbook ended at time: $(get-Date -format r)"
 }
