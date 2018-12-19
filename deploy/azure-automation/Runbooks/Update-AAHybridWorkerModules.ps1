@@ -232,10 +232,17 @@ try
         }
         Write-Output -InputObject "Forcing install of PowerShellGet from PSGallery"
         # PSGallery as source is hardcoded and not using the ModuleRepositoryName variable
-        $VerboseLog = Install-Module -Name PowerShellGet -AllowClobber -Force -Repository PSGallery -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
+        $VerboseLog = Install-Module -Name PowerShellGet -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
         if ($oErr)
         {
-            Write-Error -Message "Failed to install module: PowerShellGet" -ErrorAction Continue
+            if($oErr -like "*No match was found for the specified search criteria and module name*")
+            {
+                Write-Error -Message "Failed to find PowerShellGet in repository: $($Using:ModuleRepositoryName)" -ErrorAction Continue
+            }
+            else
+            {
+                Write-Error -Message "Failed to install module: PowerShellGet from: $($Using:ModuleRepositoryName)" -ErrorAction Continue
+            }
             $oErr = $Null
         }
         if ($VerboseLog)
