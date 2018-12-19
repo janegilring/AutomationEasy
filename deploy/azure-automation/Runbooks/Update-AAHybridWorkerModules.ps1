@@ -20,14 +20,14 @@ DESCRITPION:
             This Runbook will check installed modules in AA account and attempt to download them from the configured trusted repositories on to the hybrid worker(s)
             It can also update modules installed by local configured repositories(using Install-Module) to the newest version available.
             The logic will not clean out older versions of modules.
-            The different behaviours are configurable by manipulating parameters of the Runbook, see the paramenter description below for further details.
+            The different behaviours are configurable by manipulating parameters of the Runbook, see the parameter description below for further details.
 
             Note:
                 All manually uploaded (not available through repositories configurable through Register-PSRepository) modules to AA will not be handled by this Runbooks, and should be handled by other means
                 Run Get-InstalledModule in PS command window (not in ISE) to check that Repository variable is set to a configured and trusted repository
 
             Warning:
-                The runbook will automatically set PSGallery as a trusted repository on all workers on first run.
+                The Runbook will automatically set PSGallery as a trusted repository on all workers on first run.
                 It is strongly recommended to set up a private repository to use for production.
 
 PREREQUISITES:
@@ -167,7 +167,7 @@ try
 
     #region Get data from AA
     # Get modules installed in AA
-    Write-Verbose -Message "Retrieving installed modues in AA"
+    Write-Verbose -Message "Retrieving installed modules in AA"
     $AAInstalledModules = Get-AzureRMAutomationModule -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName |
         Where-Object {$_.ProvisioningState -eq "Succeeded"}
 
@@ -275,7 +275,7 @@ try
                     Write-Output -InputObject "Module: $($MissingModule.Name) is missing on hybrid worker"
                     try
                     {
-                        # ErrorVariable does not get populated, try/catch is a workaround to get at the error, if more module are returned only select with excact same name
+                        # ErrorVariable does not get populated, try/catch is a workaround to get at the error, if more module are returned only select with exact same name
                         $ModuleFound = Find-Module -Name $MissingModule.Name -AllVersions -Repository $Repositories.Name -ErrorAction Stop |
                             Where-Object -FilterScript {$_.Name -eq $MissingModule.Name}
                     }
@@ -287,7 +287,7 @@ try
                         }
                         else
                         {
-                            Write-Error -Message "Failed to serach for module" -ErrorAction Continue
+                            Write-Error -Message "Failed to search for module" -ErrorAction Continue
                         }
                     }
                     if ($ModuleFound)
@@ -319,7 +319,7 @@ try
                                 # Check if module is already installed / can also be used to find older versions and cleanup
                                 if ((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
                                 {
-                                    # Install-Module will by default install dependecies according to documentation
+                                    # Install-Module will by default install dependencies according to documentation
                                     $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -RequiredVersion $ModuleFound.Version -Repository $ModuleFound.Repository -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                                     if ($oErr)
                                     {
@@ -357,7 +357,7 @@ try
                                 # Check if module is already installed / can also be used to find older versions and cleanup
                                 if ((Get-Module -Name $ModuleFound.Name -ListAvailable) -eq $Null)
                                 {
-                                    # Install-Module will by default install dependecies according to documentation
+                                    # Install-Module will by default install dependencies according to documentation
                                     $VerboseLog = Install-Module -Name $ModuleFound.Name -AllowClobber -Repository $ModuleFound.Repository -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                                     if ($oErr)
                                     {
@@ -435,7 +435,7 @@ try
                             }
                         }
 
-                        # Redirecting Verbose stream to Output stream so log can be transfered back
+                        # Redirecting Verbose stream to Output stream so log can be transferred back
                         $VerboseLog = Update-Module -Name $InstalledModule.Name -ErrorAction SilentlyContinue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
                         # continue on error
                         if ($oErr)
@@ -496,7 +496,7 @@ try
                         # Check if repo name is URL, if try to reinstall module to get supported repo naming convention
                         if ($InstalledModule.Repository -match '(https?://([-\w\.]+)+(:\d+)?(/([\w/_\.]*(\?\S+)?)?)?)')
                         {
-                            # Check if Get-InstalledMoule does not give correct repository formatting. Reinstall module to force correct repository naming
+                            # Check if Get-InstalledModule does not give correct repository formatting. Reinstall module to force correct repository naming
                             $ModuleFound = $Null
                             # If multiple repos are in use find can return multiple modules
                             $ModuleFound = Find-Module -Name $InstalledModule.Name -Repository $Repositories.Name -ErrorAction SilentlyContinue
@@ -592,7 +592,7 @@ try
                 }
                 $oErr = $Null
             }
-            # Dont start update job if other Runbooks are running on the hybrid worker group. At the moment one can only get the hybrid worker group something is running on not the idividual worker
+            # Dont start update job if other Runbooks are running on the hybrid worker group. At the moment one can only get the hybrid worker group something is running on not the individual worker
             if (-not [bool]($AAjobs.HybridWorker -match $AAworkerGroup.Name))
             {
                 ForEach ($AAworker in $AAworkerGroup.RunbookWorker.Name)
