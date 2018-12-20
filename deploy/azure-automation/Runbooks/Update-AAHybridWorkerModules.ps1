@@ -2,7 +2,7 @@
 #Requires -Module AzureRM.Profile, AzureRM.Automation
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification="By design - used for counting installed / updated modules on all remoted workers")]
 Param(
-    [bool]$UpdateAllHybridGoups = $true,
+    [bool]$UpdateAllHybridGroups = $true,
     [bool]$ForceInstallModule = $false,
     [bool]$UpdateToNewestModule = $false,
     [bool]$SyncOnly = $false,
@@ -40,7 +40,7 @@ PREREQUISITES:
                 AAhybridWorkerAdminCredentials  = Credential object that contains username & password for an account that is local admin on the hybrid worker(s).
                                                   If hybrid worker group contains more than one worker, the account must be allowed to do remoting to all workers.
 
-.PARAMETER UpdateAllHybridGoups
+.PARAMETER UpdateAllHybridGroups
             If $true the Runbook will try to remote to all hybrid workers in every hybrid group attached to AA account
             $false will only update the hybrid workers in the same hybrid group the update Runbook is running on
             Default is $true
@@ -138,7 +138,6 @@ try
     {
         Write-Error -Message "Private key of login certificate is NOT accessible, check you user certificate store if the private key is missing or damaged" -ErrorAction Stop
     }
-    # Below authentication will lock AzureRM.profile from updating
 <#
     $Null = Add-AzureRmAccount `
     -ServicePrincipal `
@@ -573,9 +572,9 @@ try
     $VerbosePreference = "silentlycontinue"
     ForEach ($AAworkerGroup in $AAworkerGroups)
     {
-        if (($AAworkerGroup.Name -ne $CurrentWorkerGroup) -and (-not $UpdateAllHybridGoups))
+        if (($AAworkerGroup.Name -ne $CurrentWorkerGroup) -and (-not $UpdateAllHybridGroups))
         {
-            Write-Output -InputObject "Skipping updating the hybrid worker group: $AAworkerGroup as UpdateAllHybridGoups is set to $UpdateAllHybridGoups"
+            Write-Output -InputObject "Skipping updating the hybrid worker group: $AAworkerGroup as UpdateAllHybridGroups is set to $UpdateAllHybridGroups"
         }
         else
         {
