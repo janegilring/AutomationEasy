@@ -1,6 +1,6 @@
 #Requires -Version 5.1
 #Requires -Module AzureRM.Profile, AzureRM.Automation
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification="By design - used for counting installed / updated modules on all remoted workers")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification="By design - used for counting installed / updated modules on all hybrid workers")]
 Param(
     [bool]$UpdateAllHybridGroups = $true,
     [bool]$ForceInstallModule = $false,
@@ -161,7 +161,6 @@ try
     {
         Write-Error -Message "Failed to login to Azure" -ErrorAction Stop
     }
-
     #endregion
 
     #region Get data from AA
@@ -213,7 +212,7 @@ try
                 if ($Repositories.InstallationPolicy -eq "Untrusted")
                 {
                     Set-PSRepository -Name $Using:ModuleRepositoryName -InstallationPolicy Trusted
-                    Write-Output -InputObject "Added trust for repositiry: $($Using:ModuleRepositoryName)"
+                    Write-Output -InputObject "Added trust for repository: $($Using:ModuleRepositoryName)"
                 }
             }
             else
@@ -221,7 +220,7 @@ try
                 if ($Using:ModuleSourceLocation)
                 {
                     Register-PSRepository -Name $Using:ModuleRepositoryName -SourceLocation $Using:ModuleSourceLocation -PublishLocation $Using:ModuleSourceLocation -InstallationPolicy 'Trusted'
-                    Write-Output -InputObject "Added repositiry: $($Using:ModuleRepositoryName) from location: $($Using:ModuleSourceLocation) to hybrid worker repository"
+                    Write-Output -InputObject "Added repository: $($Using:ModuleRepositoryName) from location: $($Using:ModuleSourceLocation) to hybrid worker repository"
                 }
                 else
                 {
