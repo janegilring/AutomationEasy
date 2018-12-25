@@ -1,6 +1,5 @@
 #Requires -Version 5.1
 #Requires -Module AzureRM.Profile, AzureRM.Automation
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification = "By design - used for counting installed / updated modules on all hybrid workers")]
 Param(
     [bool]$UpdateAllHybridGroups = $true,
     [bool]$ForceInstallModule = $false,
@@ -86,8 +85,7 @@ try
     {
         Write-Error -Message "Powershell version must be 5.1 or higher. Current version: $($PSVersionTable.PSVersion)" -ErrorAction Stop
     }
-    $VerbosePreference = "continue"
-    Write-Verbose -Message  "Starting Runbook at time: $(Get-Date -format r).`nRunning PS version: $($PSVersionTable.PSVersion).`nWorker Name: $($env:COMPUTERNAME)"
+    Write-Output -InputObject "Starting Runbook at time: $(Get-Date -format r).`nRunning PS version: $($PSVersionTable.PSVersion).`nWorker Name: $($env:COMPUTERNAME)"
     $VerbosePreference = "silentlycontinue"
     Import-Module -Name AzureRM.Profile, AzureRM.Automation -ErrorAction Continue -ErrorVariable oErr
     If ($oErr)
@@ -108,10 +106,6 @@ try
     # Local variables
     $RunbookName = "Update-AAHybridWorkerModules"
     $RunbookJobHistoryDays = -1
-
-    # Global variables
-    $Global:InstalledModulesCount = 0
-    $Global:UpdatedModulesCount = 0
     #endregion
 
     $VerbosePreference = "continue"
@@ -129,7 +123,7 @@ try
         $store.Close()
     }
 
-    $cert = Get-ChildItem -Path Cert:\CurrentUser\my | Where-Object {$_.Thumbprint -eq $($AzureConnection.CertificateThumbprint)}
+    $cert = Get-ChildItem -Path Cert:\CurrentUser\my | Where-Object -FilterScript {$_.Thumbprint -eq $($AzureConnection.CertificateThumbprint)}
     if ($($cert.PrivateKey.CspKeyContainerInfo.Accessible) -eq $True)
     {
         Write-Verbose -Message "Private key of login certificate is accessible"
@@ -152,7 +146,7 @@ try
     {
         Write-Error -Message "Failed to select Azure subscription." -ErrorAction Stop
     }
-#>
+    #>
 
     $Null = Login-AzureRmAccount -ServicePrincipal -ApplicationId $AzureConnection.ApplicationId `
         -CertificateThumbprint $AzureConnection.CertificateThumbprint -TenantId $AzureConnection.TenantId `
@@ -167,7 +161,7 @@ try
     # Get modules installed in AA
     Write-Verbose -Message "Retrieving installed modules in AA"
     $AAInstalledModules = Get-AzureRMAutomationModule -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName |
-        Where-Object {$_.ProvisioningState -eq "Succeeded"}
+        Where-Object -FilterScript {$_.ProvisioningState -eq "Succeeded"}
 
     # Get names of hybrid workers in all groups
     Write-Verbose -Message "Fetching name of all hybrid worker groups"
@@ -183,6 +177,12 @@ try
     #region Code to run remote
     $ScriptBlock =
     {
+        #region variable
+        $counterObject = @{
+            InstalledModulesCount = 0
+            UpdatedModulesCount   = 0
+        }
+        #endregion
         #region Install PowershellGet
         Import-Module -Name PowerShellGet -ErrorAction Continue -ErrorVariable oErr
         if ($oErr)
@@ -264,7 +264,7 @@ try
             #region Compare AA modules with modules installed on worker and install from repository if version found
             # Find missing modules on hybrid worker
             $MissingModules = Compare-Object -ReferenceObject $Using:AAInstalledModules -DifferenceObject $InstalledModules -Property Name -PassThru |
-                Where-Object {$_.SideIndicator -eq "<="} | Select-Object -Property Name, Version
+                Where-Object -FilterScript {$_.SideIndicator -eq "<="} | Select-Object -Property Name, Version
             if ($MissingModules)
             {
                 # Add missing modules from repositories
@@ -290,8 +290,8 @@ try
                     }
                     if ($ModuleFound)
                     {
-                        # Choose repo with highest version number
-                        if (($ModuleFound.GetTYpe()).BaseType.Name -eq "Array")
+                        # Check if there are multiple repos registered on worker
+                        if ((($ModuleFound.GetTYpe()).BaseType.Name -eq "Array") -and ($ModuleFound.Count -gt 1))
                         {
                             # Choose repo with highest version number of module
                             $RepositoryToInstallFrom = $ModuleFound | Sort-Object -Descending -Property Version | Select-Object -First 1 | Select-Object -Property Repository
@@ -336,7 +336,7 @@ try
                                         $VerboseLog
                                         $VerboseLog = $Null
                                         # Count number of modules installed
-                                        $Global:InstalledModulesCount++
+                                        $counterObject.InstalledModulesCount++
                                     }
                                 }
                             }
@@ -374,13 +374,13 @@ try
                                         $VerboseLog
                                         $VerboseLog = $Null
                                         # Number of modules updated
-                                        $Global:UpdatedModulesCount++
+                                        $counterObject.UpdatedModulesCount++
                                     }
                                 }
                             }
                             else
                             {
-                                Write-Error -Message "Could not find version: $($MissingModule.Version) of module: $($MissingModule.Name) in: $($Repositories.Name). Update module in Azure Automation" -ErrorAction Continue
+                                Write-Error -Message "Could not find version: $($MissingModule.Version) of module: $($MissingModule.Name) in: $($Repositories.Name). To install on worker, update module to supported version in Azure Automation" -ErrorAction Continue
                                 Write-Output -InputObject "Set UpdateToNewestModule to true to install newest version of module: $($MissingModule.Name).`nOr update version of module in Azure Automation"
                             }
                         }
@@ -468,7 +468,7 @@ try
                                     $VerboseLog
                                     $VerboseLog = $Null
                                     # Number of modules updated
-                                    $Global:UpdatedModulesCount++
+                                    $counterObject.UpdatedModulesCount++
                                 }
                             }
                         }
@@ -485,7 +485,7 @@ try
                                 $VerboseLog
                                 $VerboseLog = $Null
                                 # Number of modules updated
-                                $Global:UpdatedModulesCount++
+                                $counterObject.UpdatedModulesCount++
                             }
                         }
                     }
@@ -503,7 +503,7 @@ try
                             {
                                 #TODO: Better handling of from what repo to install module from if multiple are returned from find
                                 # Check if module is in multiple repos
-                                if (($ModuleFound.GetTYpe()).BaseType.Name -eq "Array")
+                                if ((($ModuleFound.GetTYpe()).BaseType.Name -eq "Array") -and ($ModuleFound.Count -gt 1))
                                 {
                                     Write-Output -InputObject "Multiple repositories has module: $($InstalledModule.Name) hosted"
                                     if ($ModuleFound.Repository -match "PSGallery")
@@ -546,7 +546,7 @@ try
                                     $VerboseLog
                                     $VerboseLog = $Null
                                     # Number of modules updated
-                                    $Global:UpdatedModulesCount++
+                                    $counterObject.UpdatedModulesCount++
                                 }
                             }
                             else
@@ -559,6 +559,8 @@ try
             }
         }
         #endregion
+        # Send back counter object by putting it on the output stream
+        New-Object -Type PSObject -Property $counterObject
     }
     #endregion
 
@@ -579,7 +581,7 @@ try
         {
             Write-Output -InputObject "Updating hybrid workers in group: $($AAworkerGroup.Name)"
             $AAjobs = Get-AzureRMAutomationJob -AutomationAccountName $AutomationAccountName -ResourceGroupName $AutomationResourceGroupName -StartTime (Get-Date).AddDays($RunbookJobHistoryDays) |
-                Where-Object {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
+                Where-Object -FilterScript {$_.RunbookName -ne $RunbookName -and $_.Hybridworker -ne $Null -and ($_.Status -eq "Running" -or $_.Status -eq "Starting" -or $_.Status -eq "Activating" -or $_.Status -eq "New") }
 
             Remove-Module -Name AzureRM.Profile, AzureRM.Automation -Force -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable oErr
             if ($oErr)
@@ -596,17 +598,27 @@ try
                 ForEach ($AAworker in $AAworkerGroup.RunbookWorker.Name)
                 {
                     Write-Output -InputObject "Invoking module update against worker: $AAworker"
-                    Invoke-Command -ComputerName $AAworker -Credential $AAworkerCredential -ScriptBlock $ScriptBlock -HideComputerName -ErrorAction Continue -ErrorVariable oErr
+                    Invoke-Command -ComputerName $AAworker -Credential $AAworkerCredential -ScriptBlock $ScriptBlock -HideComputerName -ErrorAction Continue -ErrorVariable oErr -OutVariable resultObject
                     if ($oErr)
                     {
                         Write-Error -Message "Error executing remote command against: $AAworker.`n$oErr" -ErrorAction Continue
                         $oErr = $Null
                     }
-                    Write-Output -InputObject "$InstalledModulesCount module(s) synced from AA on worker: $AAworker"
-                    Write-Output -InputObject "$UpdatedModulesCount module(s) updated on worker: $AAworker"
-                    # Reset for next worker
-                    $Global:InstalledModulesCount = 0
-                    $Global:UpdatedModulesCount = 0
+
+                    if ($resultObject)
+                    {
+                        # Add newline to clean up output stream from invoke command
+                        Write-Output -InputObject "`n"
+                        # Check for counter object
+                        if ($resultObject.InstalledModulesCount)
+                        {
+                            Write-Output -InputObject "$($resultObject.InstalledModulesCount) module(s) synced from AA on worker: $AAworker"
+                        }
+                        if ($resultObject.UpdatedModulesCount)
+                        {
+                            Write-Output -InputObject "$($resultObject.UpdatedModulesCount) module(s) updated on worker: $AAworker"
+                        }
+                    }
                 }
             }
             else
