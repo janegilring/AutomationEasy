@@ -1,6 +1,6 @@
 #Requires -Version 5.1
 #Requires -Module AzureRM.Profile, AzureRM.Automation
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification="By design - used for counting installed / updated modules on all hybrid workers")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification = "By design - used for counting installed / updated modules on all hybrid workers")]
 Param(
     [bool]$UpdateAllHybridGroups = $true,
     [bool]$ForceInstallModule = $false,
@@ -16,11 +16,11 @@ NAME:       Update-AAHybridWorkerModules
 AUTHOR:     Morten Lerudjordet
 EMAIL:      morten.lerudjordet@rewired.no
 
-DESCRITPION:
+DESCRIPTION:
             This Runbook will check installed modules in AA account and attempt to download them from the configured trusted repositories on to the hybrid worker(s)
             It can also update modules installed by local configured repositories(using Install-Module) to the newest version available.
             The logic will not clean out older versions of modules.
-            The different behaviours are configurable by manipulating parameters of the Runbook, see the parameter description below for further details.
+            The different behaviors are configurable by manipulating parameters of the Runbook, see the parameter description below for further details.
 
             Note:
                 All manually uploaded (not available through repositories configurable through Register-PSRepository) modules to AA will not be handled by this Runbooks, and should be handled by other means
@@ -62,7 +62,7 @@ PREREQUISITES:
 
 .PARAMETER UpdateOnly
             If $true the Runbook will only update already installed modules on the hybrid worker
-            $false will query AA for modules installed there and add the onces missing on the worker
+            $false will query AA for modules installed there and add the ones missing on the worker
             Default is $false
 
 .PARAMETER AllRepositories
@@ -138,7 +138,7 @@ try
     {
         Write-Error -Message "Private key of login certificate is NOT accessible, check you user certificate store if the private key is missing or damaged" -ErrorAction Stop
     }
-<#
+    <#
     $Null = Add-AzureRmAccount `
     -ServicePrincipal `
     -TenantId $AzureConnection.TenantId `
@@ -233,7 +233,7 @@ try
         $VerboseLog = Install-Module -Name PowerShellGet -AllowClobber -Force -Repository $Using:ModuleRepositoryName -ErrorAction Continue -ErrorVariable oErr -Verbose:$True -Confirm:$False 4>&1
         if ($oErr)
         {
-            if($oErr -like "*No match was found for the specified search criteria and module name*")
+            if ($oErr -like "*No match was found for the specified search criteria and module name*")
             {
                 Write-Error -Message "Failed to find PowerShellGet in repository: $($Using:ModuleRepositoryName)" -ErrorAction Continue
             }
