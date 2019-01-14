@@ -42,9 +42,9 @@ param()
 #endregion
 
 #region Azure variable assets
-
-$CsvPath = '~\Documents\GitHub\BI.Cloud.VM.Lifecycle\Assets\AzureAutomation\AzureAutomationVariables.csv'
-$XlsxPath = '~\Documents\AzureAutomationVariables.xlsx'
+AzureAutomation
+$CsvPath = '~\Git\user-management\Azure\Automation\Assets\AzureAutomationVariables.csv'
+$XlsxPath = '~\Git\user-management\Azure\Automation\Assets\AzureAutomationVariables.xlsx'
 $AAVariables = Import-Csv -Path $CsvPath
 
 #region Export variables
@@ -93,8 +93,8 @@ foreach ($variable in $AAVariables)
 
 #region Azure credential assets
 
-$CsvPath = '~\Documents\GitHub\BI.Cloud.VM.Lifecycle\Assets\AzureAutomation\AzureAutomationCredentials.csv'
-$XlsxPath = '~\Documents\AzureAutomationCredentials.xlsx'
+$CsvPath = '~\Git\user-management\Azure\Automation\Assets\AzureAutomationCredentials.csv'
+$XlsxPath = '~\Git\user-management\Azure\Automation\Assets\AzureAutomationCredentials.xlsx'
 $AACredentials = Import-Csv -Path $CsvPath
 
 #region Export credentials
