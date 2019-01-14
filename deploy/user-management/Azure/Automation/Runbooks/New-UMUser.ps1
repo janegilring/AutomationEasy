@@ -86,7 +86,7 @@ Write-Output "Step 2 - Perform Pester tests and retrieve assets from Azure Autom
 
     $ActiveDirectoryCredential = Get-AutomationPSCredential -Name 'User Automation service account'
     $AzureADCredential = Get-AutomationPSCredential -Name 'User Automation service account'
-    $AzureADConnectServerCredential = Get-AutomationPSCredential -Name 'User Automation service account - one.local'
+    $AzureADConnectServerCredential = Get-AutomationPSCredential -Name 'User Automation service account'
     $ExchangeOnlineCredential = Get-AutomationPSCredential -Name 'User Automation service account'
     $SharepointOnlineCredential = Get-AutomationPSCredential -Name 'User Automation service account'
 
@@ -106,7 +106,7 @@ Write-Output 'Step 2 - completed'
 
     Write-Output 'Step 3 - Get user data from Sharepoint list'
 
-        $UserSourceData = Get-MGUserSourceData -SharePointSiteURL $SharePointAutomationSiteURL -SharePointOnboardingListName $SharePointOnboardingListName -SharepointListNewEmployeeId $SharepointListNewEmployeeId
+        $UserSourceData = Get-UMUserSourceData -SharePointSiteURL $SharePointAutomationSiteURL -SharePointOnboardingListName $SharePointOnboardingListName -SharepointListNewEmployeeId $SharepointListNewEmployeeId
 
     Write-Output 'Step 3 - completed'
 
