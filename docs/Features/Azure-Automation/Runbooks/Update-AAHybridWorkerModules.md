@@ -14,7 +14,6 @@ This Runbook will check installed modules in AA account and attempt to download 
                 All manually uploaded (not available through repositories configurable through Register-PSRepository) modules to AA will not be handled by this Runbooks, and should be handled by other means
                 Run Get-InstalledModule in PS command window (not in ISE) to check that Repository variable is set to a configured and trusted repository
 
-
 PREREQUISITES:  
 
 * Powershell version 5.1 on hybrid workers
@@ -66,3 +65,7 @@ Azure Automation Assets:
             URL of repository location. Set this parameter with the ModuleRepositoryName = the new repo to add.  
             Running the Runbook once will add the new repository to hybrid workers and sets it as trusted.  
             Then set AllRepositories = $true to make the Runbook search all repositories for adding modules from AA or updating them locally.
+
+**Warning:  
+    The runbook will automatically set PSGallery as a trusted repository on all workers on first run.  
+    It is strongly recommended to set up a private repository to use for production.**
