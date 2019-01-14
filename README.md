@@ -7,12 +7,12 @@ Many aspects of IT needs to be highly customized to the different environments t
 One such example is on- and offboarding of users, which is supported by the User Management Automation solution in Automation Easy.
 In such scenarios, the solution is creating a starting point which can be built upon and customized to the specific needs of the organization it is going to be leveraged in.
 
-Full documentation is available [here](https://automationeasy.blob.core.windows.net/)
+Full documentation is available [here](https://automationeasy.crayon.com/)
 
 | Dev build | Dev docs | Master build and docs |
 |-----------|----------|-----------------------|
 |[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/PR%20Build?Label=DevBuild)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=4)|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Dev%20-%20Docs%20Build?Label=DevDocs)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=6)|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Master%20tests%20and%20documentation%20publish?Label=ProdBuild)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=5)|
-||[Dev docs](https://automationeasydev.z6.web.core.windows.net/)|[Master docs](https://automationeasy.blob.core.windows.net/)|
+||[Dev docs](https://automationeasydev.z6.web.core.windows.net/)|[Master docs](https://automationeasy.crayon.com/)|
 
 ## Deployment
 
