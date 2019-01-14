@@ -12,11 +12,9 @@ param()
  #>
 
 
- if (Get-Module -ListAvailable -Name Az) {
+ if (Get-Module -ListAvailable -Name Az.Automation) {
 
-    Import-Module -Name Az
-    Import-Module -Name Az.Automation
-
+     Import-Module -Name Az.Automation
 
     $PSDefaultParameterValues = @{
         "*AzAutomation*:ResourceGroupName" = 'Infrastructure-Automation'
@@ -43,50 +41,46 @@ param()
 #endregion
 
 #region Azure variable assets
-
-$CsvPath = '~\Documents\GitHub\BI.Cloud.VM.Lifecycle\Assets\AzureAutomation\AzureAutomationVariables.csv'
-$XlsxPath = '~\Documents\AzureAutomationVariables.xlsx'
+AzureAutomation
+$CsvPath = '~\Git\user-management\Azure\Automation\Assets\AzureAutomationVariables.csv'
+$XlsxPath = '~\Git\user-management\Azure\Automation\Assets\AzureAutomationVariables.xlsx'
 $AAVariables = Import-Csv -Path $CsvPath
-
-#region Export variables
-
-Get-AzureRmAutomationVariable | Select-Object -Property Name,Value,Description,Encrypted |
-Export-Csv -Path $CsvPath -NoTypeInformation -Force
-
-# Requires the ImportExcel PowerShell module
-Get-AzureRmAutomationVariable | Select-Object -Property Name,Value,Description,Encrypted |
-Export-Excel -Path $XlsxPath -WorkSheetname AzureAutomationVariables -AutoSize -TableName Variables
-
-#endregion
 
 #region Import variables
 
-foreach ($variable in $AAVariables)
-   {
+foreach ($variable in $AAVariables) {
 
-    if (-not (Get-AzureRmAutomationVariable -Name $variable.Name -ErrorAction SilentlyContinue)) {
+    if (-not (Get-AzAutomationVariable -Name $variable.Name -ErrorAction SilentlyContinue)) {
 
         Write-Output "Variable $($variable.Name) not found in Azure Automation Asset store, creating.."
 
-         $Encrypted = [bool]::Parse($variable.Encrypted)
-         New-AzureRmAutomationVariable -Name $variable.Name -Value $variable.Value -Description $variable.Description -Encrypted $Encrypted
+        $Encrypted = [bool]::Parse($variable.Encrypted)
+        New-AzAutomationVariable -Name $variable.Name -Value $variable.Value -Description $variable.Description -Encrypted $Encrypted
 
-       } else {
+    } else {
 
-       $VariableValue = (Get-AzureRmAutomationVariable -Name $variable.Name).Value
+        $VariableValue = (Get-AzAutomationVariable -Name $variable.Name).Value
 
-       if (-not ($VariableValue -eq $variable.Value)) {
+        if (-not ($VariableValue -eq $variable.Value)) {
 
-       Write-Output "Variable value changed for $($variable.Name). Old value: $($VariableValue) New value: $($variable.Value) Updating..."
-       $Encrypted = [bool]::Parse($variable.Encrypted)
-       Set-AzureRmAutomationVariable -Name $variable.Name -Value $variable.Value -Encrypted $Encrypted
+            Write-Output "Variable value changed for $($variable.Name). Old value: $($VariableValue) New value: $($variable.Value) Updating..."
+            $Encrypted = [bool]::Parse($variable.Encrypted)
+            Set-AzAutomationVariable -Name $variable.Name -Value $variable.Value -Encrypted $Encrypted
 
-       }
+        }
 
-       }
+    }
 
 
-   }
+}
+
+#endregion
+
+#region Export variables
+
+# Requires the ImportExcel PowerShell module
+Get-AzAutomationVariable | Select-Object -Property Name,Value,Description,Encrypted |
+Export-Excel -Path $XlsxPath -WorkSheetname AzureAutomationVariables -AutoSize -TableName Variables
 
 #endregion
 
@@ -94,34 +88,30 @@ foreach ($variable in $AAVariables)
 
 #region Azure credential assets
 
-$CsvPath = '~\Documents\GitHub\BI.Cloud.VM.Lifecycle\Assets\AzureAutomation\AzureAutomationCredentials.csv'
-$XlsxPath = '~\Documents\AzureAutomationCredentials.xlsx'
+$CsvPath = '~\Git\user-management\Azure\Automation\Assets\AzureAutomationCredentials.csv'
+$XlsxPath = '~\Git\user-management\Azure\Automation\Assets\AzureAutomationCredentials.xlsx'
 $AACredentials = Import-Csv -Path $CsvPath
-
-#region Export credentials
-
-Get-AzureRmAutomationCredential | Select-Object -Property Name,UserName,Description |
-Export-Csv -Path $CsvPath -NoTypeInformation -Force
-
-# Requires the ImportExcel PowerShell module
-Get-AzureRmAutomationCredential | Select-Object -Property Name,UserName,Description |
-Export-Excel -Path $XlsxPath -WorkSheetname AzureAutomationCredentials -AutoSize -TableName Credentials
-
-#endregion
 
 #region Import credentials
 
-foreach ($AACredential in $AACredentials)
-   {
+foreach ($AACredential in $AACredentials) {
 
-    if (-not (Get-AzureRmAutomationCredential -Name $AACredential.Name -ErrorAction SilentlyContinue)) {
+    if (-not (Get-AzAutomationCredential -Name $AACredential.Name -ErrorAction SilentlyContinue)) {
 
         Write-Output "Variable $($AACredential.Name) not found in Azure Automation Asset store, creating.."
 
-             $Value = Get-Credential -UserName $AACredential.UserName -Message "Specify password for $($AACredential.UserName)"
-             New-AzureRmAutomationCredential -Name $AACredential.Name -Value $Value -Description $variable.Description
+        $Value = Get-Credential -UserName $AACredential.UserName -Message "Specify password for $($AACredential.UserName)"
+        New-AzAutomationCredential -Name $AACredential.Name -Value $Value -Description $variable.Description
 
-       }
     }
+}
+
+#endregion
+
+#region Export credentials
+
+# Requires the ImportExcel PowerShell module
+Get-AzAutomationCredential  | Select-Object -Property Name,UserName,Description |
+Export-Excel -Path $XlsxPath -WorkSheetname AzureAutomationCredentials -AutoSize -TableName Credentials
 
 #endregion

@@ -18,10 +18,9 @@ param (
 
  #>
 
- if (Get-Module -ListAvailable -Name Az) {
+ if (Get-Module -ListAvailable -Name Az.Automation) {
 
-    Import-Module -Name Az
-    Import-Module -Name Az.Automation
+     Import-Module -Name Az.Automation
 
 } else {
 
