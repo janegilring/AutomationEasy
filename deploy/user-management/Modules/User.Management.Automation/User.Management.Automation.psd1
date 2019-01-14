@@ -12,7 +12,7 @@
 RootModule = 'User.Management.Automation.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0'
+ModuleVersion = '1.0.0'
 
 # ID used to uniquely identify this module
 GUID = '90a0dbe5-380e-49b4-bc98-b0ce5041dcb4'

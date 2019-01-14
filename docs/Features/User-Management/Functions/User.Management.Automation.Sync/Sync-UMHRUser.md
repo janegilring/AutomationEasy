@@ -8,20 +8,23 @@ schema: 2.0.0
 # Sync-UMHRUser
 
 ## SYNOPSIS
+
 {{Fill in the Synopsis}}
 
 ## SYNTAX
 
-```
+```powershell
 Sync-UMHRUser [[-Settings] <Object>] [[-HRUsers] <Object>] [[-ADUsers] <Object>]
 ```
 
 ## DESCRIPTION
+
 {{Fill in the Description}}
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> {{ Add example code here }}
 ```
@@ -31,6 +34,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -ADUsers
+
 {{Fill ADUsers Description}}
 
 ```yaml
@@ -46,6 +50,7 @@ Accept wildcard characters: False
 ```
 
 ### -HRUsers
+
 {{Fill HRUsers Description}}
 
 ```yaml
@@ -61,6 +66,7 @@ Accept wildcard characters: False
 ```
 
 ### -Settings
+
 {{Fill Settings Description}}
 
 ```yaml
@@ -82,6 +88,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS

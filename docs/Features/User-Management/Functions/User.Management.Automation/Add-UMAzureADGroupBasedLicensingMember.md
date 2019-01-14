@@ -8,21 +8,24 @@ schema: 2.0.0
 # Add-UMAzureADGroupBasedLicensingMember
 
 ## SYNOPSIS
+
 Adds the user object in $UserData to pre-defined Azure AD Group Based licensing groups.
 
 ## SYNTAX
 
-```
+```powershell
 Add-UMAzureADGroupBasedLicensingMember [[-DepartmentData] <Object>] [[-UserData] <Object>]
 ```
 
 ## DESCRIPTION
+
 This function will add the user object in $UserData to pre-defined Azure AD Group.
 The function is intended to be used from an automated process, hence the Azure AD group IDs is dynamically retrieved from Azure Automation variables.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Add-UMAzureADGroupBasedLicensingMember -UserData $UserData
 ```
@@ -30,6 +33,7 @@ PS C:\> Add-UMAzureADGroupBasedLicensingMember -UserData $UserData
 ## PARAMETERS
 
 ### -DepartmentData
+
 An object which is the output of Get-UMDepartmentData.
 
 ```yaml
@@ -45,6 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -UserData
+
 An object which is the output of New-UMUserData.
 
 ```yaml
@@ -66,6 +71,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS

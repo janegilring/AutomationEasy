@@ -8,21 +8,24 @@ schema: 2.0.0
 # Initialize-Logging
 
 ## SYNOPSIS
+
 {{Initializes logging based on the Communary.Logger PowerShell module}}
 
 ## SYNTAX
 
-```
+```powershell
 Initialize-Logging [[-LogHeader] <Object>] [[-LogFolder] <Object>] [[-LogFileNameSuffix] <Object>]
  [[-Culture] <Object>]
 ```
 
 ## DESCRIPTION
+
 {{This function will initialize logging for the running script based on the Communary.Logger PowerShell module.}}
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> {{Initialize-Logging -LogFolder C:\Logs -Culture en-US}}
 ```
@@ -32,6 +35,7 @@ PS C:\> {{Initialize-Logging -LogFolder C:\Logs -Culture en-US}}
 ## PARAMETERS
 
 ### -Culture
+
 {{Culture string (for example "en-US"}}
 
 ```yaml
@@ -47,6 +51,7 @@ Accept wildcard characters: False
 ```
 
 ### -LogFileNameSuffix
+
 {{Suffix for the filename - for example "_onboarding"}}
 
 ```yaml
@@ -62,6 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -LogFolder
+
 {{Path to the folder the log generated log file will be created in}}
 
 ```yaml
@@ -77,6 +83,7 @@ Accept wildcard characters: False
 ```
 
 ### -LogHeader
+
 {{Header in the generated log file}}
 
 ```yaml
@@ -98,6 +105,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS

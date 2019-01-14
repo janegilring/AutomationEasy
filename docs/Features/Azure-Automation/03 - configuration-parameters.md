@@ -1,13 +1,14 @@
 ﻿# Configuration parameters
 
+<!-- markdownlint-disable MD036 -->
 *Template for documenting parameters used to configure an Azure Automation account*
+<!-- markdownlint-enable MD036 -->
 
 ## Azure subscriptions
 
 | Tenant ID | Subscription ID | Subscription name |
 |-----------|-----------------|-------------------|
 |           |                 |                   |
-
 
 ## Azure resources
 
@@ -28,7 +29,7 @@
 
 | Name | Type | Value | Description |
 |------|------|-------|-------------|
-|   SharepointAutomationSiteURL *(example)*   |   string   |    https://contoso.sharepoint.com/ITAutomation   |      Sharepoint-site used to store metadata used in automation processes       |
+|   SharepointAutomationSiteURL *(example)*   |   string   |    [https://contoso.sharepoint.com/ITAutomation](https://contoso.sharepoint.com/ITAutomation)   |      Sharepoint-site used to store metadata used in automation processes       |
 |      |      |       |             |
 |      |      |       |             |
 

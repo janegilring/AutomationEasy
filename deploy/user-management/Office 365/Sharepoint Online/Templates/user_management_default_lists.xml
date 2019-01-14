@@ -174,13 +174,115 @@
             <Field Type="Lookup" DisplayName="Company:City" List="{listid:Company}" WebId="{siteid}" ShowField="City" FieldRef="32945077-69c4-4830-bf28-23d90a41253e" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{385dc657-0ae3-4fd4-8f83-5c5984cd9099}" SourceID="{{listid:User Onboarding}}" StaticName="Company_x003a_City" Name="Company_x003a_City" Version="1" />
             <Field Type="User" DisplayName="On Behalf" List="UserInfo" Required="FALSE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{8e2d3492-fe71-42fb-8955-900fddc20c6d}" SourceID="{{listid:User Onboarding}}" StaticName="On_x0020_Behalf" Name="On_x0020_Behalf" ColName="int3" RowOrdinal="0" />
             <Field Type="Text" DisplayName="Job Title" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{47a53243-96cf-4fe2-8ebe-99c5a9822243}" SourceID="{{listid:User Onboarding}}" StaticName="Job_x0020_Title" Name="Job_x0020_Title" ColName="nvarchar12" RowOrdinal="0" />
-            <Field Type="Text" DisplayName="Department" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{64d1fbf3-843a-49d5-a3c9-78ddb7ab63c1}" SourceID="{{listid:User Onboarding}}" StaticName="Department" Name="Department" ColName="nvarchar13" RowOrdinal="0" />
+            <Field Type="Lookup" DisplayName="Department" Required="TRUE" EnforceUniqueValues="FALSE" List="{listid:Department}" ShowField="Title" UnlimitedLengthInDocumentLibrary="FALSE" RelationshipDeleteBehavior="None" ID="{12cbae81-4637-4aa2-88f1-8435de7e0c5a}" SourceID="{{listid:User Onboarding}}" StaticName="Department" Name="Department" ColName="int4" RowOrdinal="0" Group="" Version="2" />
+            <Field Type="Lookup" DisplayName="Department:Name" List="{listid:Department}" WebId="{siteid}" ShowField="Title" FieldRef="12cbae81-4637-4aa2-88f1-8435de7e0c5a" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{f03cf87d-33b2-41b7-9a0f-957d2efe5c09}" SourceID="{{listid:User Onboarding}}" StaticName="Department_x003a_Name" Name="Department_x003a_Name" Version="3" Group="Custom Columns" />
+            <Field Type="Lookup" DisplayName="Department:OUPath" List="{listid:Department}" WebId="{siteid}" ShowField="OUPath" FieldRef="12cbae81-4637-4aa2-88f1-8435de7e0c5a" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{ae28ca10-8ba1-4ded-b16c-93ec1d27387f}" SourceID="{{listid:User Onboarding}}" StaticName="Department_x003a_OUPath" Name="Department_x003a_OUPath" Version="2" Group="Custom Columns" />
           </pnp:Fields>
           <pnp:FieldRefs>
             <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
             <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
             <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
             <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Department" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/Department" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/Department/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/Department/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/Department/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{D57FDEB6-B044-49E6-A47F-22D17B753672}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/ITAutomation/Lists/Department/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=45">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Company" />
+                <FieldRef Name="UserDirectory" />
+                <FieldRef Name="OUPath" />
+                <FieldRef Name="Company_x003a_Title" />
+                <FieldRef Name="Company_x003a_Country" />
+                <FieldRef Name="Company_x003a_Domain" />
+                <FieldRef Name="OnboardingApproval" />
+                <FieldRef Name="Approver" />
+                <FieldRef Name="Applications" />
+                <FieldRef Name="ADGroups" />
+                <FieldRef Name="AADGroups" />
+              </ViewFields>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Lookup" DisplayName="Company" Required="FALSE" EnforceUniqueValues="FALSE" List="{listid:Company}" ShowField="Title" UnlimitedLengthInDocumentLibrary="FALSE" RelationshipDeleteBehavior="None" ID="{7102103b-9ccb-413c-a94b-bd30c608b139}" SourceID="{{listid:Department}}" StaticName="Company" Name="Company" ColName="int1" RowOrdinal="0" Group="" Version="1" />
+            <Field Type="Lookup" DisplayName="Company:Name" List="{listid:Company}" WebId="{siteid}" ShowField="Title" FieldRef="7102103b-9ccb-413c-a94b-bd30c608b139" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{3b2a30c7-85cc-4201-8ddc-f17a2e486453}" SourceID="{{listid:Department}}" StaticName="Company_x003a_Title" Name="Company_x003a_Title" Version="3" Required="FALSE" Group="Custom Columns" />
+            <Field Type="Lookup" DisplayName="Company:Country" List="{listid:Company}" WebId="{siteid}" ShowField="Country" FieldRef="7102103b-9ccb-413c-a94b-bd30c608b139" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{e1b9f89a-da96-47e9-817d-bee0fc7595b1}" SourceID="{{listid:Department}}" StaticName="Company_x003a_Country" Name="Company_x003a_Country" Version="2" Group="Custom Columns" />
+            <Field Type="Lookup" DisplayName="Company:Domain" List="{listid:Company}" WebId="{siteid}" ShowField="Domain" FieldRef="7102103b-9ccb-413c-a94b-bd30c608b139" ReadOnly="TRUE" UnlimitedLengthInDocumentLibrary="FALSE" ID="{0f020e22-44d5-46cc-a0df-18b6ac2c0e7f}" SourceID="{{listid:Department}}" StaticName="Company_x003a_Domain" Name="Company_x003a_Domain" Version="2" Group="Custom Columns" />
+            <Field Type="Boolean" DisplayName="OnboardingApproval" EnforceUniqueValues="FALSE" Indexed="FALSE" ID="{89a5aa91-72a9-40ba-9c1b-351840ec2dfe}" SourceID="{{listid:Department}}" StaticName="OnboardingApproval" Name="OnboardingApproval" ColName="bit1" RowOrdinal="0">
+              <Default>1</Default>
+            </Field>
+            <Field Type="Choice" DisplayName="UserDirectory" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="Dropdown" FillInChoice="FALSE" ID="{067a41cd-294e-4748-a6e2-c796db9bb097}" SourceID="{{listid:Department}}" StaticName="UserDirectory" Name="UserDirectory" ColName="nvarchar4" RowOrdinal="0">
+              <Default>ad.contoso.com</Default>
+              <CHOICES>
+                <CHOICE>AzureAD</CHOICE>
+                <CHOICE>ad.contoso.com</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="Text" DisplayName="OUPath" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{9f10272c-4a03-4ce7-958f-c941cdeb57bf}" SourceID="{{listid:Department}}" StaticName="OUPath" Name="OUPath" ColName="nvarchar5" RowOrdinal="0" />
+            <Field Type="User" DisplayName="Approver" List="UserInfo" Required="FALSE" EnforceUniqueValues="FALSE" ShowField="ImnName" UserSelectionMode="PeopleOnly" UserSelectionScope="0" ID="{a2cc28d7-83df-4ae2-9fe6-528567e4e8b3}" SourceID="{{listid:Department}}" StaticName="Approver" Name="Approver" ColName="int2" RowOrdinal="0" />
+            <Field Type="MultiChoice" DisplayName="Applications" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" FillInChoice="FALSE" ID="{4ba02427-15c2-4712-ad39-85f2a1b5e1a5}" SourceID="{{listid:Department}}" StaticName="Applications" Name="Applications" ColName="ntext2" RowOrdinal="0" CustomFormatter="" Version="3">
+              <CHOICES>
+                <CHOICE>Azure DevOps</CHOICE>
+                <CHOICE>Azure Active Directory Premium P1</CHOICE>
+                <CHOICE>Microsoft 365 Business</CHOICE>
+                <CHOICE>Office 365 E3</CHOICE>
+              </CHOICES>
+            </Field>
+            <Field Type="Note" DisplayName="ADGroups" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{309f0efc-796f-4df3-a03a-117120795c67}" SourceID="{{listid:Department}}" StaticName="ADGroups" Name="ADGroups" ColName="ntext3" RowOrdinal="0" />
+            <Field Type="Note" DisplayName="AADGroups" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="FALSE" Sortable="FALSE" ID="{12e6af28-b610-4efa-957b-715236bb8380}" SourceID="{{listid:Department}}" StaticName="AADGroups" Name="AADGroups" ColName="ntext4" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Retention label" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Retention label Applied" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Email Content" Description="" DocumentTemplate="" OnQuickLaunch="true" TemplateType="100" Url="Lists/Email Content" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/Email Content/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/Email Content/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/Email Content/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{8A0028F9-5C69-4886-B214-3ED558EA4967}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/ITAutomation/Lists/Email Content/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=45">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Top_x0020_Content" />
+                <FieldRef Name="Bottom_x0020_Content" />
+                <FieldRef Name="Subject" />
+              </ViewFields>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field Type="Note" DisplayName="Top Content" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="TRUE" RichTextMode="FullHtml" IsolateStyles="TRUE" Sortable="FALSE" ID="{cbaf04c9-65c7-41d6-b358-98c9ac94ec5c}" SourceID="{{listid:Email Content}}" StaticName="Top_x0020_Content" Name="Top_x0020_Content" ColName="ntext2" RowOrdinal="0" />
+            <Field Type="Note" DisplayName="Bottom Content" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="TRUE" RichTextMode="FullHtml" IsolateStyles="TRUE" Sortable="FALSE" ID="{032e09ca-95e3-4e6f-8cb5-7aab85114d35}" SourceID="{{listid:Email Content}}" StaticName="Bottom_x0020_Content" Name="Bottom_x0020_Content" ColName="ntext3" RowOrdinal="0" />
+            <Field Type="Text" DisplayName="Subject" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{1f6fbe85-0c05-4109-9029-4383d5e1c0cc}" SourceID="{{listid:Email Content}}" StaticName="Subject" Name="Subject" ColName="nvarchar4" RowOrdinal="0" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Retention label" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Retention label Applied" />
             <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
             <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
           </pnp:FieldRefs>

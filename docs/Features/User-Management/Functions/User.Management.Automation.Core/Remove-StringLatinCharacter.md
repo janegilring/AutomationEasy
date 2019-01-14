@@ -8,20 +8,23 @@ schema: 2.0.0
 # Remove-StringLatinCharacter
 
 ## SYNOPSIS
+
 Removes special characters
 
 ## SYNTAX
 
-```
+```powershell
 Remove-StringLatinCharacter [[-String] <String>]
 ```
 
 ## DESCRIPTION
+
 This function will remove special characters from a string based on the Cyrillic alphabet
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Remove-StringLatinCharacter -String 'Vær og vind'
 ```
@@ -31,6 +34,7 @@ Will convert 'Vær og vind' to 'Var og vind'
 ## PARAMETERS
 
 ### -String
+
 The string to remove special characters from
 
 ```yaml
@@ -52,6 +56,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
