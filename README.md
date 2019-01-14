@@ -7,7 +7,7 @@ Many aspects of IT needs to be highly customized to the different environments t
 One such example is on- and offboarding of users, which is supported by the User Management Automation solution in Automation Easy.
 In such scenarios, the solution is creating a starting point which can be built upon and customized to the specific needs of the organization it is going to be leveraged in.
 
-Full documentation is available [here](https://automationeasy.blob.core.windows.net/)
+Full documentation is available [here](https://automationeasy.crayon.com/)
 
 | Dev build | Dev docs | Master build and docs |
 |-----------|----------|-----------------------|
