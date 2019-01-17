@@ -6,15 +6,15 @@ We use [mkdocs](https://www.mkdocs.org/) for project documentation and request t
 
 You can generate .md files for your module and/or new functions using `New-MarkdownHelp -Module MyAwesomeModule -OutputFolder .\docs\MyAwesomeModule`
 
-Documentation will be automatically generated and published [here](https://automationeasy.blob.core.windows.net/)
+Documentation will be automatically generated and published [here](https://automationeasy.crayon.com/)
 
 ## Pull Request Process
 
 * Fork our repo
-* Work and commit code, we recommend developing in the `dev` branch
+* Work and commit code
 * Create the Pull Request
 
-  In github, go to the **Pull Requests** tab and select **New pull request**. Please submit your pull request to the `dev` branch of the project.
+  In github, go to the **Pull Requests** tab and select **New pull request**. Please submit your pull request to the `master` branch of the project. Please also fill out the form and checklist
 
 ## Code of Conduct
 
