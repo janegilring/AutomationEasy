@@ -9,10 +9,10 @@ In such scenarios, the solution is creating a starting point which can be built 
 
 Full documentation is available [here](https://automationeasy.crayon.com/)
 
-| Dev build | Dev docs | Master build and docs |
-|-----------|----------|-----------------------|
-|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/PR%20Build?Label=DevBuild)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=4)|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Dev%20-%20Docs%20Build?Label=DevDocs)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=6)|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Master%20tests%20and%20documentation%20publish?Label=ProdBuild)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=5)|
-||[Dev docs](https://automationeasydev.z6.web.core.windows.net/)|[Master docs](https://automationeasy.crayon.com/)|
+| Unstable build (master branch) | Release docs |
+|--------------------------------|--------------|
+|[![Build Status](https://dev.azure.com/CrayonAS/AutomationEasy/_apis/build/status/Unstable%20-%20Test%20and%20docs?branchName=master&Label=UnstableBuild)](https://dev.azure.com/CrayonAS/AutomationEasy/_build/latest?definitionId=6?branchName=master)|![Build Status](https://vsrm.dev.azure.com/CrayonAS/_apis/public/Release/badge/c24d6fdd-c660-4171-b520-3dc96aea62e6/1/2)|
+|[Unstable docs](https://automationeasydev.z6.web.core.windows.net/)|[Release docs](https://automationeasy.crayon.com/)|
 
 ## Deployment
 
@@ -30,7 +30,7 @@ Install-Module Plaster -Scope CurrentUser
 Alternatively you can download a ZIP file of the latest version from Plaster`s [releases](https://github.com/PowerShell/Plaster/releases)
 page.
 
-Next, download a copy of the latest Automation Easy version, either by cloning the repository or downloading a ZIP-file as described [here](https://help.github.com/articles/cloning-a-repository/).
+Next, download a copy of the latest [Automation Easy release](https://github.com/CrayonAS/AutomationEasy/releases/latest) and unzip the files. Alternatively you can install the latest unstable by cloning the  [master](https://github.com/CrayonAS/AutomationEasy/tree/master) branch or download it as a ZIP-file as described [here](https://help.github.com/articles/cloning-a-repository/).
 
 Deploy the files with Plaster:
 
@@ -38,7 +38,7 @@ Deploy the files with Plaster:
 
 .\deploy is the path to the deploy-folder in the downloaded version of Automation Easy.
 
-For more information, see the deployment [documentation](docs/Deploy/index.md)
+For more information, see the deployment [documentation](https://automationeasy.crayon.com/Deploy/)
 
 You now have a local folder containing the selected solutions from Automation Easy. For further instructions, read the documentation for the selected solutions.
 
