@@ -8,22 +8,25 @@ schema: 2.0.0
 # Get-UMHRSyncSetting
 
 ## SYNOPSIS
+
 {{Fill in the Synopsis}}
 
 ## SYNTAX
 
-```
+```powershell
 Get-UMHRSyncSetting [[-SharePointSiteURL] <Object>] [[-SharePointHRSyncSettingsListName] <Object>]
  [[-SharePointAutomationDataSourcesListName] <Object>] [[-SharePointHRSyncAttributeMappingsListName] <Object>]
  [[-Environment] <Object>]
 ```
 
 ## DESCRIPTION
+
 {{Fill in the Description}}
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> {{ Add example code here }}
 ```
@@ -33,6 +36,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Environment
+
 {{Fill Environment Description}}
 
 ```yaml
@@ -48,6 +52,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharePointAutomationDataSourcesListName
+
 {{Fill SharePointAutomationDataSourcesListName Description}}
 
 ```yaml
@@ -63,6 +68,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharePointHRSyncAttributeMappingsListName
+
 {{Fill SharePointHRSyncAttributeMappingsListName Description}}
 
 ```yaml
@@ -78,6 +84,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharePointHRSyncSettingsListName
+
 {{Fill SharePointHRSyncSettingsListName Description}}
 
 ```yaml
@@ -93,6 +100,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharePointSiteURL
+
 {{Fill SharePointSiteURL Description}}
 
 ```yaml
@@ -114,6 +122,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS

@@ -6,15 +6,15 @@ We use [mkdocs](https://www.mkdocs.org/) for project documentation and request t
 
 You can generate .md files for your module and/or new functions using `New-MarkdownHelp -Module MyAwesomeModule -OutputFolder .\docs\MyAwesomeModule`
 
-Documentation will be automatically generated and published [here](https://automationeasy.blob.core.windows.net/)
+Documentation will be automatically generated and published [here](https://automationeasy.crayon.com/)
 
 ## Pull Request Process
 
 * Fork our repo
-* Work and commit code, we recommend developing in the `dev` branch
+* Work and commit code
 * Create the Pull Request
 
-  In github, go to the **Pull Requests** tab and select **New pull request**. Please submit your pull request to the `dev` branch of the project.
+  In github, go to the **Pull Requests** tab and select **New pull request**. Please submit your pull request to the `master` branch of the project. Please also fill out the form and checklist
 
 ## Code of Conduct
 
@@ -40,8 +40,7 @@ include:
 
 Examples of unacceptable behavior by participants include:
 
-* The use of sexualized language or imagery and unwelcome sexual attention or
-advances
+* The use of sexualized language or imagery and unwelcome sexual attention or advances
 * Trolling, insulting/derogatory comments, and personal or political attacks
 * Public or private harassment
 * Publishing others' private information, such as a physical or electronic
@@ -73,7 +72,7 @@ further defined and clarified by project maintainers.
 ### Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [INSERT EMAIL ADDRESS]. All
+reported by contacting the project team at [https://github.com/CrayonAS/AutomationEasy/issues](https://github.com/CrayonAS/AutomationEasy/issues). All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.

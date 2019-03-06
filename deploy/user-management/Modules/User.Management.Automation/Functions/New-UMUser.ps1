@@ -1,9 +1,9 @@
 ﻿function New-UMUser {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "", Justification="Not sure why this test fails - need to investigate further")]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification="By design - used to track workflow status")]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "", Justification="By design - used to create initial password which have to be changed after first logon")]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "", Justification="By design - used to track global status")]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "", Justification="By design - function is not intended for interactive use - hence ShouldProsess is not of any value")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "", Justification = "Not sure why this test fails - need to investigate further")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Justification = "By design - used to track workflow status")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "", Justification = "By design - used to create initial password which have to be changed after first logon")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "", Justification = "By design - used to track global status")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "", Justification = "By design - function is not intended for interactive use - hence ShouldProsess is not of any value")]
     param (
         $CompanyData,
         $DepartmentData,
@@ -23,11 +23,94 @@
 
         switch ($DepartmentData.UserDirectory) {
 
-            #  'AzureAD' {}
+            'AzureAD' {
+
+                Write-Log -LogEntry 'Provisioning user to Azure Active directory' -PassThru
+
+                $global:InitialPassword = New-Password -MinimumPasswordLength 12 -Type Complex
+                $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
+                $PasswordProfile.Password = $InitialPassword
+
+                $ADUserParameters = @{
+                    DisplayName       = $UserData.DisplayName
+                    GivenName         = $UserData.FirstName
+                    SurName           = $UserData.LastName
+                    JobTitle          = $UserData.JobTitle
+                    Department        = $UserData.Department
+                    Country           = $CompanyData.CompanyCountry
+                    PasswordProfile   = $PasswordProfile
+                    UserPrincipalName = $UserData.UserPrincipalName
+                    mailNickName      = $UserData.mailNickName
+                    UsageLocation     = $UserData.UsageLocation
+                    Mobile            = $UserData.MobilePhone
+                    City              = $UserData.City
+                    PostalCode        = $UserData.PostalCode
+                    StreetAddress     = $UserData.StreetAddress
+                    AccountEnabled    = $true
+                    ErrorAction       = 'Stop'
+                }
+
+                if ($UserData.MobilePhone) {
+
+                    $ADUserParameters.Mobile = $UserData.MobilePhone
+
+                }
+
+                try {
+
+                    $null = Connect-AzureAD -Credential $AzureADCredential -ErrorAction Stop
+                    $AzureADUsers = Get-AzureADUser -All $true -ErrorAction Stop
+
+                }
+
+                catch {
+
+                    $global:WorkflowStatus = 'Completed'
+                    $global:Status = "An error occured checking Azure AD for existing user with the username $($UserData.UserPrincipalName) : $($PSItem.Exception.Message)"
+
+                    Write-Log -LogEntry $Status -LogType Error
+
+                    break
+                }
+
+                $UserPrincipalName = $UserData.UserPrincipalName
+                $TestAzureADUser = $AzureADUsers.Where{$PSItem.UserPrincipalName -eq $UserPrincipalName}
+
+                if ($TestAzureADUser) {
+
+                    $global:WorkflowStatus = 'Completed'
+                    $global:Status = "User creation failed - aborting. Error message: Username $UserPrincipalName already exists."
+
+                    Write-Log -LogEntry $Status -LogType Error
+
+                    break
+
+                }
+
+                try {
+
+                    New-ADUser @Parameters
+
+                    $global:WorkflowStatus = 'In progress'
+                    $global:Status = 'User creation completed'
+
+                }
+
+                catch {
+
+                    $global:WorkflowStatus = 'Completed'
+                    $global:Status = "User creation failed - aborting. Error message: $($_.Exception.Message)"
+
+                    Write-Log -LogEntry $Status -LogType Error
+
+                }
+
+
+            }
 
             default {
 
-                # Provision user to on-prem Active Directory
+                Write-Log -LogEntry 'Provisioning user to on-prem Active Directory' -PassThru
 
                 $samaccountname = $UserData.UserName
                 $ThirdCharacter = [int][char]$samaccountname[2]
@@ -76,6 +159,7 @@
                     $Parameters.Add('Credential', $ActiveDirectoryCredential)
                     $Parameters.Add('Enabled', $true)
                     $Parameters.Add('Passthru', $true)
+                    $Parameters.Add('ErrorAction', $true)
 
                     $OtherAttributes = @{}
 
@@ -220,11 +304,7 @@
                         $global:WorkflowStatus = 'Completed'
                         $global:Status = "User creation failed - aborting. Error message: $($_.Exception.Message)"
 
-                        if (Get-Command -Name Write-Log -ErrorAction SilentlyContinue) {
-
-                            Write-Log -LogEntry $Status -LogType Error
-
-                        }
+                        Write-Log -LogEntry $Status -LogType Error
 
                     }
 

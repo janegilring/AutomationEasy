@@ -8,17 +8,19 @@ schema: 2.0.0
 # Send-UMNewUserWelcomeEmail
 
 ## SYNOPSIS
+
 Sends a welcome e-mail to a new user.
 
 ## SYNTAX
 
-```
+```powershell
 Send-UMNewUserWelcomeEmail [[-UserData] <Object>] [[-DepartmentData] <Object>]
  [[-ExchangeOnlineCredential] <PSCredential>] [[-MailFrom] <Object>] [[-SmtpServer] <Object>]
  [[-SmtpPort] <Object>] [[-MailEncoding] <Object>]
 ```
 
 ## DESCRIPTION
+
 This function sends a welcome e-mail to a new user.
 The subject, bottom and top content of the e-mail is dynamically retrieved from a Sharepoint list - making it possible for IT Operations to customize the content without changing any PowerShell code.
 The command will wait for the new user`s mailbox to be provsioned in Exchange Online (function can be customized to also work against an on-prem Exchange service).
@@ -26,6 +28,7 @@ The command will wait for the new user`s mailbox to be provsioned in Exchange On
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Send-UMNewUserWelcomeEmail -UserData $UserData
 ```
@@ -35,6 +38,7 @@ $UserData is the output of New-UMUser.
 ## PARAMETERS
 
 ### -DepartmentData
+
 The DepartmentData parameter expects the output that is created by the function Get-UMDepartmentData
 
 ```yaml
@@ -50,6 +54,7 @@ Accept wildcard characters: False
 ```
 
 ### -ExchangeOnlineCredential
+
 Credentials Exchange Online - used for relaying the e-mail message
 
 ```yaml
@@ -65,6 +70,7 @@ Accept wildcard characters: False
 ```
 
 ### -MailEncoding
+
 Encoding for the e-mail message to be sent
 
 ```yaml
@@ -80,6 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -MailFrom
+
 From address
 
 ```yaml
@@ -95,6 +102,7 @@ Accept wildcard characters: False
 ```
 
 ### -SmtpPort
+
 SMTP port
 
 ```yaml
@@ -110,6 +118,7 @@ Accept wildcard characters: False
 ```
 
 ### -SmtpServer
+
 SMTP Server
 
 ```yaml
@@ -125,6 +134,7 @@ Accept wildcard characters: False
 ```
 
 ### -UserData
+
 The UserData parameter expects the output that is created by the function New-UMUserData
 
 ```yaml
@@ -146,6 +156,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS

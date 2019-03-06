@@ -74,7 +74,7 @@
 
         $ADUser = Get-ADUser -Filter 'userprincipalname -eq $UserPrincipalName'
 
-        if ($AzureADUser.Count -eq 1) {
+        if (@($ADUser).Count) {
 
             $ADGroups = @()
             $ADGroups += $DepartmentData.ADGroups

@@ -8,29 +8,32 @@ schema: 2.0.0
 # Send-UMTeamsWarningNotification
 
 ## SYNOPSIS
+
 Sends a warning notification to a Microsoft Teams channel
 
 ## SYNTAX
 
-```
+```powershell
 Send-UMTeamsWarningNotification [[-UserData] <Object>] [[-Message] <Object>] [[-Color] <Object>]
 ```
 
 ## DESCRIPTION
+
 This function sends a notification to a Microsoft Teams channel.
 The function is intended to be used from an automated process, hence the webhook URL is dynamically retrieved from Azure Automation variables in a parent runbook.
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Send-UMTeamsNotification -Message 'User creation failed. Error message: Insufficient number of Office 365 licenses available'
 ```
 
-
 ## PARAMETERS
 
 ### -Color
+
 Color for the text to be sent
 
 ```yaml
@@ -46,6 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -Message
+
 Text for the message to be sent
 
 ```yaml
@@ -61,6 +65,7 @@ Accept wildcard characters: False
 ```
 
 ### -UserData
+
 The UserData parameter expects the output that is created by the function New-UMUserData
 
 ```yaml
@@ -82,6 +87,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS

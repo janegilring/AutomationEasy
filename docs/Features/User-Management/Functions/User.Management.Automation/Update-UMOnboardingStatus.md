@@ -8,17 +8,19 @@ schema: 2.0.0
 # Update-UMOnboardingStatus
 
 ## SYNOPSIS
+
 Updates the WorkflowStatus or the Status fields for a given list item in a given Sharepoint list
 
 ## SYNTAX
 
-```
+```powershell
 Update-UMOnboardingStatus [[-SharePointSiteURL] <String>] [[-SharePointListName] <String>]
  [[-SharepointListItemID] <String>] [[-WorkflowStatus] <String>] [[-Status] <String>]
  [[-SPOCredential] <PSCredential>]
 ```
 
 ## DESCRIPTION
+
 This function updates the WorkflowStatus or the Status fields for a given list item in a given Sharepoint list.
 The function is used to track status during automated user management tasks.
 The function is intended to be used from an automated process, hence credentials and URLs is dynamically retrieved from Azure Automation variables in a parent runbook.
@@ -26,14 +28,15 @@ The function is intended to be used from an automated process, hence credentials
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> Update-UMOnboardingStatus -SharePointSiteURL $SharePointAutomationSiteURL -SharePointListName $SharePointOnboardingListName -SharepointListItemID $SharepointListNewEmployeeId -WorkflowStatus $WorkflowStatus -Status $Status -SPOCredential $SharepointOnlineCredential
 ```
 
-
 ## PARAMETERS
 
 ### -SPOCredential
+
 Credential for Sharepoint Online
 
 ```yaml
@@ -49,6 +52,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharePointListName
+
 Name of the Sharepoint-list
 
 ```yaml
@@ -64,6 +68,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharePointSiteURL
+
 The site URL to the Sharepoint-site hosting the Sharepoint-list to update status fields in
 
 ```yaml
@@ -79,6 +84,7 @@ Accept wildcard characters: False
 ```
 
 ### -SharepointListItemID
+
 Item ID for the item to update status fields in
 
 ```yaml
@@ -94,6 +100,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
+
 String containing the new value for the Status field
 
 ```yaml
@@ -109,6 +116,7 @@ Accept wildcard characters: False
 ```
 
 ### -WorkflowStatus
+
 String containing the new value for the WorkflowStatus field
 
 ```yaml
@@ -130,6 +138,7 @@ Accept wildcard characters: False
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS

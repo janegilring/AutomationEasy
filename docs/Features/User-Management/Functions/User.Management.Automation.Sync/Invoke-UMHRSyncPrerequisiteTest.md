@@ -8,20 +8,23 @@ schema: 2.0.0
 # Invoke-UMHRSyncPrerequisiteTest
 
 ## SYNOPSIS
+
 {{Fill in the Synopsis}}
 
 ## SYNTAX
 
-```
+```powershell
 Invoke-UMHRSyncPrerequisiteTest
 ```
 
 ## DESCRIPTION
+
 {{Fill in the Description}}
 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> {{ Add example code here }}
 ```
@@ -37,6 +40,7 @@ PS C:\> {{ Add example code here }}
 ## OUTPUTS
 
 ### System.Object
+
 ## NOTES
 
 ## RELATED LINKS
