@@ -62,13 +62,13 @@
 
     if ($Office365E3LicensesAvailable -le $Office365E3LicenseWarningThreshold) {
 
-        Send-MGTeamsWarningNotification -Message "Number of Office 365 licenses available ($Office365E3LicensesAvailable) is below the defined threshold of $Office365E3LicenseWarningThreshold" -Color yellow
+        Send-UMTeamsWarningNotification -Message "Number of Office 365 licenses available ($Office365E3LicensesAvailable) is below the defined threshold of $Office365E3LicenseWarningThreshold" -Color yellow
 
     }
 
     if ($AzureADPremiumLicensesAvailable -le $AzureADPremiumLicenseWarningThreshold) {
 
-        Send-MGTeamsWarningNotification -Message "Number of Azure AD Premium licenses available ($AzureADPremiumLicensesAvailable) is below the defined threshold of $AzureADPremiumLicenseWarningThreshold" -Color yellow
+        Send-UMTeamsWarningNotification -Message "Number of Azure AD Premium licenses available ($AzureADPremiumLicensesAvailable) is below the defined threshold of $AzureADPremiumLicenseWarningThreshold" -Color yellow
 
     }
 

@@ -19,7 +19,7 @@
 
             $Color = 'red'
 
-            Send-MGTeamsWarningNotification -Message "An error occured in User Onboarding: $Status" -Color Red
+            Send-UMTeamsWarningNotification -Message "An error occured in User Onboarding: $Status" -Color Red
 
         }
 
