@@ -56,7 +56,7 @@ try {
 
 $WorkspaceParameters = @{
     Name = $WorkspaceName
-    Solutions = 'ADAssessment','ADReplication','DnsAnalytics'
+    RetentionInDays = 90
     Location = $Location
     ResourceGroupName = $ResourceGroupName
     Sku = $Sku
@@ -67,6 +67,8 @@ New-AzOperationalInsightsWorkspace @WorkspaceParameters
 #endregion
 
 #region Add solutions
+
+$Solutions = 'ADAssessment','ADReplication','DnsAnalytics'
 
 foreach ($solution in $Solutions) {
 
