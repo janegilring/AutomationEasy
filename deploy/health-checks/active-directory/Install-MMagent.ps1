@@ -26,7 +26,7 @@
                     Start-Sleep 1
                 }
             }
-            Start-Process -FilePath "C:\AutomationEasy\MMAgent\Setup.exe" -ArgumentList "/qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_AZURE_CLOUD_TYPE=0 OPINSIGHTS_WORKSPACE_ID=$Using:WorkspaceID OPINSIGHTS_WORKSPACE_KEY=$Using:WorkspaceKey AcceptEndUserLicenseAgreement=1"
+            & C:\AutomationEasy\MMAgent\Setup.exe /qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_AZURE_CLOUD_TYPE=0 OPINSIGHTS_WORKSPACE_ID=$Using:WorkspaceID OPINSIGHTS_WORKSPACE_KEY=$Using:WorkspaceKey AcceptEndUserLicenseAgreement=1
         }
     }
 }
