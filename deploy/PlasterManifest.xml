@@ -12,9 +12,9 @@
   </metadata>
   <parameters>
     <parameter name="FeatureSelect" type="multichoice" prompt="Please select features to install" default='1,2'>
-      <choice label="&amp;1 - Active Directory Health Check" help="Deployment will contain the Active Directory Health Check feature" value="ADHealthCheck" />
-      <choice label="&amp;2 - User Management" help="Deployment will contain the User Management feature" value="UserManagement" />
-      <choice label="&amp;3 - Azure Automation" help="Deployment will contain the Azure Automation feature" value="AzureAutomation" />
+      <choice label="Active &amp;Directory Health Check" help="Deployment will contain the Active Directory Health Check feature" value="ADHealthCheck" />
+      <choice label="&amp;User Management" help="Deployment will contain the User Management feature" value="UserManagement" />
+      <choice label="&amp;Azure Automation" help="Deployment will contain the Azure Automation feature" value="AzureAutomation" />
     </parameter>
     <parameter name="AzureADConnectServer" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="FQDN of the AAD Connect server" default="SERVER01" />
     <parameter name="AzureADPremiumLicenseWarningThreshold" condition='$PLASTER_PARAM_FeatureSelect -contains "UserManagement"' type="text" prompt="Azure AD Premium license remaining warning threshold" default="3" />
