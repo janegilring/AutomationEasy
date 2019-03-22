@@ -2,8 +2,8 @@
 param (
     $RootSiteUrl = 'https://crayondemos.sharepoint.com',
     $NewSiteUrl = 'https://crayondemos.sharepoint.com/sites/ITAutomation/',
-    $SiteTitle = 'IT Automation',
-    $SiteDescription = 'Sharepoint lists for configuration-, meta- and staging data used in automated IT processes',
+    $NewSiteTitle = 'IT Automation',
+    $NewSiteDescription = 'Sharepoint lists for configuration-, meta- and staging data used in automated IT processes',
     $TemplatePath = "$PSScriptRoot\Templates\user_management_default_lists.xml"
 )
 
@@ -40,10 +40,10 @@ param (
 $SPOConnection = Connect-PnPOnline -Url $RootSiteUrl -UseWebLogin -ReturnConnection
 
 $SiteParameters = @{
-    Url = $SiteUrl
-    Title = $SiteTitle
+    Url = $NewSiteUrl
+    Title = $NewSiteTitle
     Type = 'CommunicationSite'
-    Description = $SiteDescription
+    Description = $NewSiteDescription
     Connection = $SPOConnection
 }
 
