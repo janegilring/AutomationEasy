@@ -11,3 +11,5 @@ The following resources can be deployed using the templates and scripts provided
 
 - Log Analytics workspace (Log Analytics is now a part of Azure Monitor)
 - Microsoft Monitoring installation on domain controllers
+
+Alternatively if SCOM is present in the onprem infrastructure, and agents already deployed on domain controllers, you can connect SCOM to the L.A workspace.
